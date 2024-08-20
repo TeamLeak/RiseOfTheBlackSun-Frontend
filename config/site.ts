@@ -9,14 +9,14 @@ export const siteConfig = {
   navItems: [],
   navMenuItems: [],
   links: {
-    github: "https://github.com/nextui-org/nextui",
+    github: "https://github.com/saintedlittle",
     twitter: "https://twitter.com/getnextui",
     docs: "https://nextui.org",
-    discord: "https://discord.gg/9b6yyZKmH4",
+    discord: "https://discord.gg/bsUEbQQ3Rn",
     sponsor: "https://patreon.com/jrgarciadev",
     onlinemap: "http://riseoftheblacksun.eu:7777/",
     forum: "https://riseoftheblacksun.eu:1522/",
-    telegram: "https://t.me/+BlqeCkhqb4Y3MDU6",
+    telegram: "https://t.me/+zSIiRYBJtQ81YjAy",
   },
   servers: {
     vanilla: "riseoftheblacksun.eu:51820",

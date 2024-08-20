@@ -7,7 +7,6 @@ import {
 } from "@nextui-org/navbar";
 import { Button } from "@nextui-org/button";
 import { Link } from "@nextui-org/link";
-import { AiOutlineLogin } from "react-icons/ai";
 import { Spacer } from "@nextui-org/react";
 import { BsMap } from "react-icons/bs";
 import { MdForum } from "react-icons/md";
