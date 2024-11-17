@@ -1,14 +1,12 @@
-"use client";
-import { useEffect, useRef, useState } from "react";
-import { Link } from "@nextui-org/link";
+import React, { useEffect, useRef, useState } from "react";
 import { Snippet } from "@nextui-org/snippet";
+import { Tooltip } from "@nextui-org/react";
+import { Button } from "@nextui-org/button";
+import { useRouter } from "next/navigation";
 
 import { siteConfig } from "@/config/site";
 
-import "./styles.css";
-import { useRouter } from "next/navigation";
-import { Tooltip } from "@nextui-org/react";
-import { Button } from "@nextui-org/button"; // Импорт стилей с анимацией
+import "./styles.css"; // Ваши стили
 
 const HeroSection: React.FC = () => {
   const [underline, setUnderline] = useState(true);
@@ -25,42 +23,51 @@ const HeroSection: React.FC = () => {
   const router = useRouter();
 
   return (
-    <div className="">
+    <div className="bg-background text-foreground">
       <div className="container mx-auto px-4 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+          {/* Левая часть: Текст */}
           <div>
-            <h1 className="text-5xl font-bold leading-tight">
-              <span className="typing">
+            <h1 className="text-4xl md:text-5xl font-bold leading-tight text-center lg:text-left relative">
+              <span className="relative">
                 <span
                   ref={underlineRef}
-                  className={`double-underline ${!underline ? "underline-fade" : ""}`}
-                >
-                  Уникальные
-                </span>
-                <br />
-                Майнкрафт сервера
+                  className={`absolute bottom-0 left-0 h-[4px] ${
+                    !underline ? "hidden" : "block"
+                  }`}
+                  style={{
+                    width: "100%",
+                    backgroundColor: "var(--nextui-colors-primary)",
+                    zIndex: -1,
+                  }}
+                />
+                Уникальные
               </span>
+              <br />
+              Майнкрафт сервера
             </h1>
-            <p className="text-lg mt-4">
+            <p className="text-md md:text-lg mt-4 text-center lg:text-left">
               {siteConfig.name} - {siteConfig.description}
             </p>
-            <div className="mt-8 flex gap-4">
+            <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
               <Button
-                className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-md transition duration-300 h-15"
+                className="bg-primary text-white font-bold py-3 px-6 rounded-md transition duration-300 w-full sm:w-auto h-14" // h-14 corresponds to 3.5rem; adjust as needed
                 size="lg"
-                onClick={() => router.push("/play")}
+                onPress={() => router.push("/play")}
               >
                 Начать играть
               </Button>
+
               <Snippet
                 hideSymbol
-                className="border border-gray-400 hover:border-gray-300 text-gray-400 hover:text-gray-300 font-bold py-3 px-6 rounded-md transition duration-300"
+                className="font-bold py-3 px-6 rounded-md transition duration-300 w-full sm:w-auto"
                 color="success"
               >
                 {siteConfig.ipaddress}
               </Snippet>
             </div>
           </div>
+          {/* Правая часть: Картинка */}
           <Tooltip
             key={"success"}
             className="capitalize"
@@ -68,10 +75,10 @@ const HeroSection: React.FC = () => {
             content={"Просто забавный персонаж!"}
             placement={"bottom"}
           >
-            <div className="relative">
+            <div className="relative hidden lg:block">
               <img
                 alt="Minecraft Character"
-                className="h-auto slide-in-right"
+                className="h-64 w-auto slide-in-right"
                 src={siteConfig.big_image}
               />
             </div>

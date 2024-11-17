@@ -1,7 +1,6 @@
 import { NavbarBrand, NavbarContent } from "@nextui-org/navbar";
 import NextLink from "next/link";
 
-import { Logo } from "@/components/icons";
 import { siteConfig } from "@/config/site";
 
 export const CustomNavbarMenu = () => {
@@ -9,7 +8,7 @@ export const CustomNavbarMenu = () => {
     <NavbarContent className="basis-1/5 sm:basis-full" justify="start">
       <NavbarBrand as="li" className="gap-3 max-w-fit">
         <NextLink className="flex justify-start items-center gap-1" href="/">
-          <Logo />
+          <img alt="Logo" height="36" src="/input.svg" width="32" />
           <p className="font-bold text-inherit">{siteConfig.name}</p>
         </NextLink>
       </NavbarBrand>

@@ -1,24 +1,47 @@
+import { MdForum } from "react-icons/md";
+import { BsMap } from "react-icons/bs";
+
 export type SiteConfig = typeof siteConfig;
 
 export const siteConfig = {
   name: "Black Sun Project",
   description:
     "Это целая платформа для развлечений, построенная на базе Minecraft.",
-  ipaddress: "riseoftheblacksun.eu:51820",
+  ipaddress: "gg.riseoftheblacksun.eu",
   big_image: "https://www.tynker.com/minecraft/imgs/editor/character-pic.png",
+  servers_fetch_url: "https://riseoftheblacksun.eu/api/getservers.php",
   navItems: [],
-  navMenuItems: [],
+  navMenuItems: [
+    {
+      name: "Форум",
+      href: "/forum",
+      icon: {
+        type: MdForum,
+        className: "text-amber-700",
+        size: 22,
+      },
+    },
+    {
+      name: "Карта",
+      href: "/map",
+      icon: {
+        type: BsMap,
+        className: "text-warning",
+        size: 20,
+      },
+    },
+  ],
   links: {
     github: "https://github.com/saintedlittle",
     twitter: "https://twitter.com/getnextui",
     docs: "https://nextui.org",
-    discord: "https://discord.gg/bsUEbQQ3Rn",
-    sponsor: "https://patreon.com/jrgarciadev",
-    onlinemap: "http://riseoftheblacksun.eu:7777/",
-    forum: "https://riseoftheblacksun.eu:1522/",
-    telegram: "https://t.me/+zSIiRYBJtQ81YjAy",
+    discord: "https://discord.gg/hdaezg8kxr",
+    sponsor: "https://vk.com/asykyy",
+    onlinemap: "http://riseoftheblacksun.eu/map",
+    forum: "https://t.me/+J87i02XAM9Q1YzI6",
+    telegram: "https://t.me/riseoftheblacksun_chat",
   },
   servers: {
-    vanilla: "riseoftheblacksun.eu:51820",
+    vanilla: "gg.riseoftheblacksun.eu",
   },
 };

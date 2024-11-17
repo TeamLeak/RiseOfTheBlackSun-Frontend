@@ -43,10 +43,23 @@ const ServerCard: React.FC<ServerCardProps> = ({
     }
   };
 
-  const paragraphs = description
-    .split(".")
-    .filter((paragraph) => paragraph.trim() !== "")
-    .map((paragraph) => paragraph.trim());
+  const formatDescription = (text: string): JSX.Element => {
+    const processedParagraphs = text
+      .split(/(?<!\d)\.(?!\d)/) // Разделяем только там, где точка не между числами
+      .filter((part) => part.trim() !== "");
+
+    return (
+      <>
+        {processedParagraphs.map((paragraph, index) => (
+          <React.Fragment key={index}>
+            {paragraph.trim()}
+            {index < processedParagraphs.length - 1 && "."}
+            <br />
+          </React.Fragment>
+        ))}
+      </>
+    );
+  };
 
   return (
     <div className="bg-gray-800 rounded-lg p-6">
@@ -85,14 +98,7 @@ const ServerCard: React.FC<ServerCardProps> = ({
               <ModalHeader className="flex flex-col gap-1">
                 Сервер {title}
               </ModalHeader>
-              <ModalBody>
-                {paragraphs.map((paragraph, index) => (
-                  <p key={index}>
-                    {paragraph}
-                    {index < paragraphs.length - 1 ? "." : ""}
-                  </p>
-                ))}
-              </ModalBody>
+              <ModalBody>{formatDescription(description)}</ModalBody>
               <ModalFooter>
                 <Button color="danger" variant={"bordered"} onPress={onClose}>
                   Закрыть

@@ -6,8 +6,8 @@ export const Footer = () => {
       <Link
         isExternal
         className="flex items-center gap-1 text-current"
-        href="https://nextui-docs-v2.vercel.app?utm_source=next-app-template"
-        title="nextui.org homepage"
+        href="https://t.me/+48888448428"
+        title="Author"
       >
         <span className="text-default-600">Made with</span>
         <p className="text-primary">💖 by saintedlittle</p>

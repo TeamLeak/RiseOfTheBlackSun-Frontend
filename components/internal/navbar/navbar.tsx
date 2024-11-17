@@ -1,9 +1,11 @@
-"use client"
+"use client";
 import {
   Navbar as NextUINavbar,
   NavbarContent,
   NavbarMenuToggle,
   NavbarItem,
+  NavbarMenu,
+  NavbarMenuItem,
 } from "@nextui-org/navbar";
 import { Button } from "@nextui-org/button";
 import { Link } from "@nextui-org/link";
@@ -68,26 +70,36 @@ export const Navbar = () => {
         <NavbarMenuToggle />
       </NavbarContent>
 
-      {/*<NavbarMenu>*/}
-      {/*  <div className="mx-4 mt-2 flex flex-col gap-2">*/}
-      {/*    {siteConfig.navMenuItems.map((item, index) => (*/}
-      {/*      <NavbarMenuItem key={`${item}-${index}`}>*/}
-      {/*        <Link*/}
-      {/*          color={*/}
-      {/*            index === 2*/}
-      {/*              ? "primary"*/}
-      {/*              : index === siteConfig.navMenuItems.length - 1*/}
-      {/*                ? "danger"*/}
-      {/*                : "foreground"*/}
-      {/*          }*/}
-      {/*          href="#"*/}
-      {/*          size="lg"*/}
-      {/*        >*/}
-      {/*        </Link>*/}
-      {/*      </NavbarMenuItem>*/}
-      {/*    ))}*/}
-      {/*  </div>*/}
-      {/*</NavbarMenu>*/}
+      <NavbarMenu>
+        <div className="mx-4 mt-2 flex flex-col gap-2">
+          <div className="flex flex-col gap-2 sm:flex-row sm:gap-4">
+            {siteConfig.navMenuItems.map((item, index) => {
+              const Icon = item.icon.type; // Берем тип иконки из config
+
+              return (
+                <NavbarMenuItem key={`${item.name}-${index}`}>
+                  <Button
+                    isExternal
+                    as={Link}
+                    className="text-sm font-normal text-default-600 bg-default-100 hover:bg-default-200 transition-colors duration-300 w-full" // Добавлено w-full
+                    href={item.href}
+                    startContent={
+                      <Icon
+                        className={item.icon.className}
+                        size={item.icon.size}
+                      />
+                    }
+                    variant="flat"
+                  >
+                    {item.name}
+                  </Button>
+                </NavbarMenuItem>
+              );
+            })}
+          </div>
+        </div>
+      </NavbarMenu>
+
     </NextUINavbar>
   );
 };
