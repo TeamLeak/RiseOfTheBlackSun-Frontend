@@ -1,0 +1,9 @@
+# *
+User-agent: *
+Allow: /
+
+# Host
+Host: https://riseoftheblacksun.eu/
+
+# Sitemaps
+Sitemap: https://riseoftheblacksun.eu/sitemap.xml
