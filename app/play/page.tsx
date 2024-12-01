@@ -6,7 +6,7 @@ import { IoContrast, IoGameController } from "react-icons/io5";
 
 import { title } from "@/components/primitives";
 
-export default function BlogPage() {
+export default function PlayPage() {
   const defaultContent =
     "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.";
 

@@ -10,8 +10,9 @@ import {
 import { Button } from "@nextui-org/button";
 import { Link } from "@nextui-org/link";
 import { Spacer } from "@nextui-org/react";
-import { BsMap } from "react-icons/bs";
+import { BsMap, BsNewspaper } from "react-icons/bs";
 import { MdForum } from "react-icons/md";
+import { useRouter } from "next/navigation";
 
 import { siteConfig } from "@/config/site";
 import { ThemeSwitch } from "@/components/theme-switch";
@@ -21,6 +22,8 @@ import { CustomNavbarMenu } from "@/components/internal/navbar/CustomNavbarMenu"
 import AuthButton from "@/components/AuthButton";
 
 export const Navbar = () => {
+  const router = useRouter();
+
   return (
     <NextUINavbar
       className="justify-items-center"
@@ -29,6 +32,19 @@ export const Navbar = () => {
     >
       <CustomNavbarMenu />
       <NavbarItem className="hidden md:flex">
+        <Button
+          isExternal
+          as={Link}
+          className="text-sm font-normal text-default-600 bg-default-100"
+          startContent={<BsNewspaper className="text-blue-600" size={20} />}
+          variant="flat"
+          onPress={() => router.push("/blog")}
+        >
+          Новости
+        </Button>
+
+        <Spacer x={4} />
+
         <Button
           isExternal
           as={Link}
@@ -99,7 +115,6 @@ export const Navbar = () => {
           </div>
         </div>
       </NavbarMenu>
-
     </NextUINavbar>
   );
 };

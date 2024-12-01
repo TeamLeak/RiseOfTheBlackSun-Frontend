@@ -1,5 +1,5 @@
 import { MdForum } from "react-icons/md";
-import { BsMap } from "react-icons/bs";
+import { BsMap, BsNewspaper } from "react-icons/bs";
 
 export type SiteConfig = typeof siteConfig;
 
@@ -27,6 +27,15 @@ export const siteConfig = {
       icon: {
         type: BsMap,
         className: "text-warning",
+        size: 20,
+      },
+    },
+    {
+      name: "Новости",
+      href: "/blog",
+      icon: {
+        type: BsNewspaper,
+        className: "text-blue-500",
         size: 20,
       },
     },
