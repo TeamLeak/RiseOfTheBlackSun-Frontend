@@ -3,7 +3,7 @@ const nextConfig = {
     images: {
         unoptimized: true, // Отключает обработку Next.js
     },
-   // output: 'export',
+   output: 'export',
 };
 
 module.exports = nextConfig;

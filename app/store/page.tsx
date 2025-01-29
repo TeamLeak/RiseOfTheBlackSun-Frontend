@@ -90,7 +90,7 @@ const ShopPage = () => {
       >
         <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
           <h1 className="text-3xl font-bold bg-gradient-to-r from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent">
-            MINECRAFT STORE
+            RISE OF THE BLACK SUN | МАГАЗИН
           </h1>
 
           <div className="flex items-center gap-6">
