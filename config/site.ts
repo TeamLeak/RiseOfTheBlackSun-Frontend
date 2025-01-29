@@ -8,7 +8,7 @@ export const siteConfig = {
   description:
     "Это целая платформа для развлечений, построенная на базе Minecraft.",
   ipaddress: "gg.riseoftheblacksun.eu",
-  big_image: "https://pngimg.com/d/minecraft_PNG71.png",
+  big_image: "https://riseoftheblacksun.eu/big_image.png",
   servers_fetch_url: "https://riseoftheblacksun.eu/api/getservers.php",
   navItems: [],
   navMenuItems: [
@@ -32,7 +32,7 @@ export const siteConfig = {
     },
     {
       name: "Новости",
-      href: "/blog",
+      href: "/servers",
       icon: {
         type: BsNewspaper,
         className: "text-blue-500",

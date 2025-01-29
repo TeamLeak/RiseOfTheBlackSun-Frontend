@@ -1,6 +1,6 @@
 "use client";
 import { motion, AnimatePresence } from "framer-motion";
-import { FiBook, FiMessageSquare } from "react-icons/fi";
+import {FiBook, FiBox, FiMessageSquare} from "react-icons/fi";
 import { RiCoinLine } from "react-icons/ri";
 import { FaDiscord, FaTelegramPlane } from "react-icons/fa";
 import {
@@ -23,7 +23,7 @@ const menuItems = [
   {
     name: "Новости",
     icon: FiBook,
-    href: "/blog",
+    href: "/news",
     color: "text-blue-400",
     delay: 0.2,
   },
@@ -35,11 +35,11 @@ const menuItems = [
     delay: 0.1,
   },
   {
-    name: "Форум",
-    icon: FiMessageSquare,
-    href: siteConfig.links.forum,
-    color: "text-emerald-400",
-    delay: 0.3,
+    name: "Сервера",
+    icon: FiBox,
+    href: "/servers",
+    color: "text-blue-400",
+    delay: 0.2,
   },
   {
     name: "Документы",
@@ -47,6 +47,13 @@ const menuItems = [
     href: "/documents",
     color: "text-purple-400",
     delay: 0.5,
+  },
+  {
+    name: "Форум",
+    icon: FiMessageSquare,
+    href: siteConfig.links.forum,
+    color: "text-emerald-400",
+    delay: 0.3,
   },
 ];
 

@@ -1,7 +1,11 @@
 import { useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Button, Snippet } from "@heroui/react";
-import { motion, useInView, useMotionValue } from "framer-motion";
+import {
+  motion,
+  useInView,
+  useMotionValue,
+} from "framer-motion";
 import Image from "next/image";
 import { FiZap, FiArrowRight, FiCode, FiStar } from "react-icons/fi";
 
@@ -11,17 +15,17 @@ const developers = [
   {
     name: "saintedlittle",
     role: "Главный разработчик",
-    avatar: "/developers/saintedlittle.jpg",
+    avatar: "https://riseoftheblacksun.eu/developers/saintedlittle.jpg",
   },
   {
     name: ".nika",
     role: "Дизайнер миров",
-    avatar: "/developers/nika.jpg",
+    avatar: "https://riseoftheblacksun.eu/developers/nika.jpg",
   },
   {
     name: "f0x1y",
     role: "Системный архитектор",
-    avatar: "/developers/fox1y.jpg",
+    avatar: "https://riseoftheblacksun.eu/developers/fox1y.jpg",
   },
 ];
 
@@ -29,18 +33,18 @@ const features = [
   {
     title: "Уникальные миры",
     description: "Эпические ландшафты с динамической генерацией",
-    image: "/promo_3.webp",
+    image: "https://riseoftheblacksun.eu/promo_3.webp",
   },
   {
     title: "Командные сражения",
     description: "PvP и PvE режимы с системой кланов",
-    image: "/promo_1.webp",
+    image: "https://riseoftheblacksun.eu/promo_1.webp",
     reversed: true,
   },
   {
     title: "Кастомизация",
     description: "Тысячи скинов и уникальных предметов",
-    image: "/promo_2.webp",
+    image: "https://riseoftheblacksun.eu/promo_2.webp",
   },
 ];
 

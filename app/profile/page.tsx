@@ -1,9 +1,9 @@
 "use client";
 import React from "react";
-import { Card, CardBody, CardFooter, CardHeader } from "@nextui-org/card";
-import { Image } from "@nextui-org/image";
-import { Button } from "@nextui-org/button";
-import { Divider, Input } from "@nextui-org/react";
+import { Card, CardBody, CardFooter, CardHeader } from "@heroui/card";
+import { Image } from "@heroui/image";
+import { Button } from "@heroui/button";
+import { Divider, Input } from "@heroui/react";
 
 export default function BlogPage() {
   return (
@@ -23,8 +23,7 @@ export default function BlogPage() {
             src="https://nextui.org/images/hero-card.jpeg"
             width={250}
           />
-          <CardFooter
-            className="justify-between before:bg-white/10 border-white/20 border-1 overflow-hidden py-1 absolute before:rounded-xl rounded-large bottom-1 w-[calc(100%_-_8px)] shadow-small ml-1 z-10">
+          <CardFooter className="justify-between before:bg-white/10 border-white/20 border-1 overflow-hidden py-1 absolute before:rounded-xl rounded-large bottom-1 w-[calc(100%_-_8px)] shadow-small ml-1 z-10">
             <Button
               fullWidth
               className="text-tiny text-white bg-black/20"
