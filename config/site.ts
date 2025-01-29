@@ -8,7 +8,7 @@ export const siteConfig = {
   description:
     "Это целая платформа для развлечений, построенная на базе Minecraft.",
   ipaddress: "gg.riseoftheblacksun.eu",
-  big_image: "https://www.tynker.com/minecraft/imgs/editor/character-pic.png",
+  big_image: "https://pngimg.com/d/minecraft_PNG71.png",
   servers_fetch_url: "https://riseoftheblacksun.eu/api/getservers.php",
   navItems: [],
   navMenuItems: [

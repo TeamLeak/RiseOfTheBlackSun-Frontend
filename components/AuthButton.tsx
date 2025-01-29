@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Button } from "@nextui-org/react";
+import { Button } from "@heroui/react";
 import { AiOutlineLogin } from "react-icons/ai";
 import { useRouter } from "next/navigation"; // Импорт из 'next/navigation' для новых версий Next.js
 

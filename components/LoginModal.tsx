@@ -9,8 +9,8 @@ import {
   Checkbox,
   Input,
   Link,
-} from "@nextui-org/react";
-import { LockFilledIcon, MailIcon } from "@nextui-org/shared-icons";
+} from "@heroui/react";
+import { LockFilledIcon, MailIcon } from "@heroui/shared-icons";
 
 interface LoginModalProps {
   isOpen: boolean;

@@ -1,13 +1,13 @@
 "use client";
 import React from "react";
-import { Modal, useDisclosure } from "@nextui-org/react";
-import { Button } from "@nextui-org/button";
+import { Modal, useDisclosure } from "@heroui/react";
+import { Button } from "@heroui/button";
 import {
   ModalBody,
   ModalContent,
   ModalFooter,
   ModalHeader,
-} from "@nextui-org/modal";
+} from "@heroui/modal";
 
 import HomeButton from "./HomeButton";
 

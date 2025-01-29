@@ -1,6 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'export',
+    images: {
+        domains: ['www.tynker.com', 'pngimg.com', 'arcania.world', 'e7.pngegg.com', 'www.freepnglogos.com'], // Add the external domain here
+    },
+  // output: 'export',
 };
 
 module.exports = nextConfig;

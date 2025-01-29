@@ -1,119 +1,232 @@
 "use client";
+import { motion, AnimatePresence } from "framer-motion";
+import { FiBook, FiMessageSquare } from "react-icons/fi";
+import { RiCoinLine } from "react-icons/ri";
+import { FaDiscord, FaTelegramPlane } from "react-icons/fa";
 import {
   Navbar as NextUINavbar,
   NavbarContent,
-  NavbarMenuToggle,
   NavbarItem,
   NavbarMenu,
   NavbarMenuItem,
-} from "@nextui-org/navbar";
-import { Button } from "@nextui-org/button";
-import { Link } from "@nextui-org/link";
-import { Spacer } from "@nextui-org/react";
-import { BsMap, BsNewspaper } from "react-icons/bs";
-import { MdForum } from "react-icons/md";
-import { useRouter } from "next/navigation";
+} from "@heroui/navbar";
+import { Button } from "@heroui/button";
+import { Link } from "@heroui/link";
+import { usePathname } from "next/navigation";
+import { cn } from "@heroui/react";
+import { CgFileDocument } from "react-icons/cg";
 
-import { siteConfig } from "@/config/site";
-import { ThemeSwitch } from "@/components/theme-switch";
-import { GithubIcon } from "@/components/icons";
-import { NavbarLinks } from "@/components/internal/navbar/NavbarLinks";
-import { CustomNavbarMenu } from "@/components/internal/navbar/CustomNavbarMenu";
 import AuthButton from "@/components/AuthButton";
+import { siteConfig } from "@/config/site";
+
+const menuItems = [
+  {
+    name: "Новости",
+    icon: FiBook,
+    href: "/blog",
+    color: "text-blue-400",
+    delay: 0.2,
+  },
+  {
+    name: "Магазин",
+    icon: RiCoinLine,
+    href: "/store",
+    color: "text-amber-400",
+    delay: 0.1,
+  },
+  {
+    name: "Форум",
+    icon: FiMessageSquare,
+    href: siteConfig.links.forum,
+    color: "text-emerald-400",
+    delay: 0.3,
+  },
+  {
+    name: "Документы",
+    icon: CgFileDocument,
+    href: "/documents",
+    color: "text-purple-400",
+    delay: 0.5,
+  },
+];
 
 export const Navbar = () => {
-  const router = useRouter();
+  const pathname = usePathname();
 
   return (
     <NextUINavbar
-      className="justify-items-center"
-      maxWidth="xl"
+      className="bg-[#080808]/90 backdrop-blur-lg border-b-2 border-[#1a1a1a] shadow-pixel"
+      isBlurred={false}
+      maxWidth="2xl"
       position="sticky"
     >
-      <CustomNavbarMenu />
-      <NavbarItem className="hidden md:flex">
-        <Button
-          isExternal
-          as={Link}
-          className="text-sm font-normal text-default-600 bg-default-100"
-          startContent={<BsNewspaper className="text-blue-600" size={20} />}
-          variant="flat"
-          onPress={() => router.push("/blog")}
-        >
-          Новости
-        </Button>
+      {/* Анимированный фон */}
+      <div className="absolute inset-0 z-0 opacity-20">
+        {[...Array(30)].map((_, i) => (
+          <motion.div
+            key={i}
+            animate={{
+              opacity: [0, 0.3, 0],
+              transition: {
+                duration: 2 + Math.random() * 3,
+                repeat: Infinity,
+                delay: Math.random() * 2,
+              },
+            }}
+            className="absolute w-[2px] h-[2px] bg-[#4CAF50]"
+            initial={{
+              top: `${Math.random() * 100}%`,
+              left: `${Math.random() * 100}%`,
+              opacity: 0,
+            }}
+          />
+        ))}
+      </div>
 
-        <Spacer x={4} />
-
-        <Button
-          isExternal
-          as={Link}
-          className="text-sm font-normal text-default-600 bg-default-100"
-          href={siteConfig.links.forum}
-          startContent={<MdForum className="text-amber-700" size={22} />}
-          variant="flat"
-        >
-          Форум
-        </Button>
-
-        <Spacer x={4} />
-        <Button
-          isExternal
-          as={Link}
-          className="text-sm font-normal text-default-600 bg-default-100"
-          href={siteConfig.links.onlinemap}
-          startContent={<BsMap className="text-warning" size={20} />}
-          variant="flat"
-        >
-          Карта
-        </Button>
-
-        <Spacer x={4} />
-        <AuthButton />
-      </NavbarItem>
-      <NavbarContent
-        className="hidden sm:flex basis-1/5 sm:basis-full"
-        justify="end"
-      >
-        <NavbarLinks />
+      {/* Десктопная навигация */}
+      <NavbarContent className="hidden md:flex gap-4" justify="start">
+        <div className={"flex items-center gap-2"}>
+          <Link
+            className="font-minecraft flex items-center gap-3 group"
+            href="/"
+          >
+            <div className="relative p-2 ">
+              <img
+                alt="Logo"
+                className={"w-6 h-6 text-[#6aee87]"}
+                height="36"
+                src="/input.svg"
+                width="32"
+              />
+              <div className="absolute inset-0 border-2 border-[#4CAF50]/50 opacity-50" />
+            </div>
+          </Link>
+        </div>
       </NavbarContent>
 
-      <NavbarContent className="sm:hidden basis-1 pl-4" justify="end">
-        <Link isExternal aria-label="Github" href={siteConfig.links.github}>
-          <GithubIcon className="text-default-500" />
-        </Link>
-        <ThemeSwitch />
-        <NavbarMenuToggle />
+      <NavbarContent className="hidden md:flex gap-1" justify="center">
+        {menuItems.map((item) => (
+          <NavbarItem key={item.name}>
+            <motion.div
+              animate={{ opacity: 1, y: 0 }}
+              initial={{ opacity: 0, y: -10 }}
+              transition={{ delay: item.delay }}
+            >
+              <Button
+                as={Link}
+                className={cn(
+                  "px-5 py-3 rounded-none border-2 border-[#1a1a1a] bg-[#0a0a0a]",
+                  "font-minecraft hover:border-[#4CAF50] hover:bg-[#0f0f0f]",
+                  pathname === item.href ? "border-[#4CAF50]" : "",
+                )}
+                href={item.href}
+                variant="flat"
+              >
+                <item.icon className={cn(item.color, "mr-2")} size={20} />
+                <span className="text-[#8a8a8a] group-hover:text-[#6aee87]">
+                  {item.name}
+                </span>
+              </Button>
+            </motion.div>
+          </NavbarItem>
+        ))}
       </NavbarContent>
 
-      <NavbarMenu>
-        <div className="mx-4 mt-2 flex flex-col gap-2">
-          <div className="flex flex-col gap-2 sm:flex-row sm:gap-4">
-            {siteConfig.navMenuItems.map((item, index) => {
-              const Icon = item.icon.type; // Берем тип иконки из config
+      <NavbarContent className="hidden md:flex gap-2" justify="end">
+        <motion.div
+          animate={{ opacity: 1 }}
+          className="flex items-center gap-2"
+          initial={{ opacity: 0 }}
+        >
+          <Button
+            isIconOnly
+            as={Link}
+            className="border-2 border-[#1a1a1a] bg-[#0a0a0a] hover:border-[#4CAF50] rounded-none"
+            href={siteConfig.links.telegram}
+            variant="flat"
+          >
+            <FaTelegramPlane className="w-5 h-5 text-[#6aee87]" />
+          </Button>
 
-              return (
-                <NavbarMenuItem key={`${item.name}-${index}`}>
+          <Button
+            isIconOnly
+            as={Link}
+            className="border-2 border-[#1a1a1a] bg-[#0a0a0a] hover:border-[#4CAF50] rounded-none"
+            href={siteConfig.links.discord}
+            variant="flat"
+          >
+            <FaDiscord className="w-5 h-5 text-[#6aee87]" />
+          </Button>
+
+          <AuthButton />
+        </motion.div>
+      </NavbarContent>
+
+      <NavbarMenu className="bg-[#080808]/95 backdrop-blur-xl border-l-2 border-[#1a1a1a]">
+        <AnimatePresence>
+          <div className="px-4 py-8">
+            {menuItems.map((item) => (
+              <motion.div
+                key={item.name}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                initial={{ opacity: 0, x: -20 }}
+                transition={{ delay: item.delay * 0.5 }}
+              >
+                <NavbarMenuItem>
                   <Button
-                    isExternal
+                    fullWidth
                     as={Link}
-                    className="text-sm font-normal text-default-600 bg-default-100 hover:bg-default-200 transition-colors duration-300 w-full" // Добавлено w-full
+                    className={cn(
+                      "justify-start px-6 py-4 text-lg mb-2",
+                      "border-2 border-[#1a1a1a] bg-[#0a0a0a]",
+                      pathname === item.href ? "border-[#4CAF50]" : "",
+                    )}
                     href={item.href}
-                    startContent={
-                      <Icon
-                        className={item.icon.className}
-                        size={item.icon.size}
-                      />
-                    }
                     variant="flat"
                   >
-                    {item.name}
+                    <item.icon className={cn(item.color, "mr-3")} size={24} />
+                    <span className="text-[#8a8a8a]">{item.name}</span>
                   </Button>
                 </NavbarMenuItem>
-              );
-            })}
+              </motion.div>
+            ))}
+
+            <motion.div
+              animate={{ opacity: 1 }}
+              className="flex items-center justify-center gap-4 mt-6"
+              initial={{ opacity: 0 }}
+            >
+              <AuthButton />
+            </motion.div>
+
+            <motion.div
+              animate={{ scale: 1 }}
+              className="flex justify-center gap-4 mt-8"
+              initial={{ scale: 0 }}
+            >
+              <Button
+                isIconOnly
+                as={Link}
+                className="border-2 border-[#1a1a1a] bg-[#0a0a0a] hover:border-[#4CAF50]"
+                href={siteConfig.links.telegram}
+                variant="flat"
+              >
+                <FaTelegramPlane className="w-6 h-6 text-[#6aee87]" />
+              </Button>
+
+              <Button
+                isIconOnly
+                as={Link}
+                className="border-2 border-[#1a1a1a] bg-[#0a0a0a] hover:border-[#4CAF50]"
+                href={siteConfig.links.discord}
+                variant="flat"
+              >
+                <FaDiscord className="w-6 h-6 text-[#6aee87]" />
+              </Button>
+            </motion.div>
           </div>
-        </div>
+        </AnimatePresence>
       </NavbarMenu>
     </NextUINavbar>
   );

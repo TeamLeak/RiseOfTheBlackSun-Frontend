@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { Accordion, AccordionItem, Spacer } from "@nextui-org/react";
+import { Accordion, AccordionItem, Spacer } from "@heroui/react";
 import { MonitorMobileIcon } from "@nextui-org/shared-icons";
 import { IoContrast, IoGameController } from "react-icons/io5";
 
