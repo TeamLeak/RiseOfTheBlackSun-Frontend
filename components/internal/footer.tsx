@@ -64,22 +64,22 @@ export const Footer = () => {
 
             <div className="space-y-4">
               <div className="flex items-center gap-3 text-[#8a8a8a] hover:text-[#6aee87] transition-colors">
-                <FiMail className="w-5 h-5" />
+                <FiMail className="w-5 h-5"/>
                 <span className="font-minecraft">
                   support@riseoftheblacksun.eu
                 </span>
               </div>
 
               <div className="flex gap-4 mt-4">
-                <SocialIcon icon={<RiDiscordFill className="w-6 h-6" />} />
-                <SocialIcon icon={<FiYoutube className="w-6 h-6" />} />
-                <SocialIcon icon={<FiGithub className="w-6 h-6" />} />
+                <SocialIcon icon={<RiDiscordFill className="w-6 h-6"/>} url="https://discord.gg/B5bCztAP4J"/>
+                <SocialIcon icon={<FiYoutube className="w-6 h-6"/>} url="https://youtube.com"/>
+                <SocialIcon icon={<FiGithub className="w-6 h-6"/>} url="https://github.com/saintedlittle"/>
               </div>
             </div>
           </div>
 
           {/* Центральный логотип (заполнитель для grid) */}
-          <div className="hidden md:block" />
+          <div className="hidden md:block"/>
 
           {/* Правый блок - Навигация */}
           <div className="grid grid-cols-2 gap-8 bg-[#0a0a0a]/90 p-6 border-2 border-[#1a1a1a] backdrop-blur-sm">
@@ -92,13 +92,13 @@ export const Footer = () => {
                 ИГРА
               </motion.h3>
               <div className="space-y-3">
-                <LinkItem icon={<TbCube />} link={"#"} text="Режимы" />
+                <LinkItem icon={<TbCube />} link={"/servers"} text="Режимы" />
                 <LinkItem
                   icon={<FiAlertTriangle />}
                   link={"/documents"}
                   text="Правила"
                 />
-                <LinkItem icon={<TbPrison />} link={"#"} text="Баны" />
+                <LinkItem icon={<TbPrison />} link={"/banlist"} text="Баны" />
               </div>
             </div>
 
@@ -111,8 +111,8 @@ export const Footer = () => {
                 ИНФО
               </motion.h3>
               <div className="space-y-3">
-                <LinkItem icon="⚔️" link={"#"} text="Магазин" />
-                <LinkItem icon="🛡️" link={"#"} text="Поддержка" />
+                <LinkItem icon="⚔️" link={"/store"} text="Магазин" />
+                <LinkItem icon="🛡️" link={"/help"} text="Поддержка" />
                 <LinkItem icon="📜" link={"/documents"} text="Документы" />
               </div>
             </div>
@@ -148,17 +148,27 @@ export const Footer = () => {
   );
 };
 
-const SocialIcon = ({ icon }: { icon: React.ReactNode }) => (
-  <motion.div
-    className="p-3 border-2 border-[#1a1a1a] bg-[#0f0f0f] cursor-pointer hover:border-[#4CAF50] transition-all"
-    whileHover={{ y: -2 }}
-    whileTap={{ scale: 0.95 }}
-  >
-    <div className="text-[#6aee87] hover:text-[#8affa8] transition-colors">
-      {icon}
-    </div>
-  </motion.div>
-);
+const SocialIcon = ({ icon, url }: { icon: React.ReactNode; url?: string }) => {
+  const Wrapper = url ? "a" : "div";
+
+  return (
+    <Wrapper
+      href={url}
+      rel={url ? "noopener noreferrer" : undefined}
+      target={url ? "_blank" : undefined}
+    >
+      <motion.div
+        className="p-3 border-2 border-[#1a1a1a] bg-[#0f0f0f] cursor-pointer hover:border-[#4CAF50] transition-all"
+        whileHover={{ y: -2 }}
+        whileTap={{ scale: 0.95 }}
+      >
+        <div className="text-[#6aee87] hover:text-[#8affa8] transition-colors">
+          {icon}
+        </div>
+      </motion.div>
+    </Wrapper>
+  );
+};
 
 const LinkItem = ({
   text,

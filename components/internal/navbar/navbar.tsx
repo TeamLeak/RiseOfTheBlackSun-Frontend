@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { FiBook, FiBox, FiMessageSquare, FiMenu, FiX } from "react-icons/fi";
 import { RiCoinLine } from "react-icons/ri";
 import { FaDiscord, FaTelegramPlane } from "react-icons/fa";
@@ -99,13 +99,13 @@ export const Navbar = () => {
       <NavbarContent className="md:hidden" justify="start">
         <NavbarMenuToggle
           aria-label={isMenuOpen ? "Закрыть меню" : "Открыть меню"}
-          className="text-[#6aee87]"
+          className="text-[#6aee87] z-50"
           icon={isMenuOpen ? <FiX size={24} /> : <FiMenu size={24} />}
         />
       </NavbarContent>
 
       {/* Логотип для мобильной версии */}
-      <NavbarContent className="md:hidden" justify="center">
+      <NavbarContent className="md:hidden z-50" justify="center">
         <Link className="font-minecraft flex items-center" href="/">
           <img
             alt="Логотип"
@@ -200,66 +200,62 @@ export const Navbar = () => {
 
       {/* Мобильное меню */}
       <NavbarMenu className="bg-[#080808]/95 backdrop-blur-xl border-l-2 border-[#1a1a1a] pt-4">
-        <AnimatePresence>
-          {isMenuOpen && (
-            <motion.div
-              animate={{ opacity: 1, x: 0 }}
-              className="px-4"
-              exit={{ opacity: 0, x: -20 }}
-              initial={{ opacity: 0, x: -20 }}
-            >
-              <div className="flex flex-col gap-2">
-                {menuItems.map((item) => (
-                  <NavbarMenuItem key={item.name}>
-                    <Button
-                      fullWidth
-                      as={Link}
-                      className={cn(
-                        "justify-start px-6 py-4 text-lg",
-                        "border-2 border-[#1a1a1a] bg-[#0a0a0a]",
-                        pathname === item.href ? "border-[#4CAF50]" : "",
-                      )}
-                      href={item.href}
-                      variant="flat"
-                      onClick={() => setIsMenuOpen(false)}
-                    >
-                      <item.icon className={cn(item.color, "mr-3")} size={24} />
-                      <span className="text-[#8a8a8a]">{item.name}</span>
-                    </Button>
-                  </NavbarMenuItem>
-                ))}
+        <motion.div
+          animate={{ opacity: 1, x: 0 }}
+          className="px-4"
+          exit={{ opacity: 0, x: -20 }}
+          initial={{ opacity: 0, x: -20 }}
+        >
+          <div className="flex flex-col gap-2">
+            {menuItems.map((item) => (
+              <NavbarMenuItem key={item.name}>
+                <Button
+                  fullWidth
+                  as={Link}
+                  className={cn(
+                    "justify-start px-6 py-4 text-lg",
+                    "border-2 border-[#1a1a1a] bg-[#0a0a0a]",
+                    pathname === item.href && "border-[#4CAF50]",
+                  )}
+                  href={item.href}
+                  variant="flat"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  <item.icon className={cn(item.color, "mr-3")} size={24} />
+                  <span className="text-[#8a8a8a]">{item.name}</span>
+                </Button>
+              </NavbarMenuItem>
+            ))}
 
-                {/* Социальные кнопки (мобильные) */}
-                <div className="flex justify-center gap-4 mt-4">
-                  <Button
-                    isIconOnly
-                    as={Link}
-                    className="border-2 border-[#1a1a1a] bg-[#0a0a0a] hover:border-[#4CAF50]"
-                    href={siteConfig.links.telegram}
-                    variant="flat"
-                  >
-                    <FaTelegramPlane className="w-6 h-6 text-[#6aee87]" />
-                  </Button>
+            {/* Социальные кнопки (мобильные) */}
+            <div className="flex justify-center gap-4 mt-4">
+              <Button
+                isIconOnly
+                as={Link}
+                className="border-2 border-[#1a1a1a] bg-[#0a0a0a] hover:border-[#4CAF50]"
+                href={siteConfig.links.telegram}
+                variant="flat"
+              >
+                <FaTelegramPlane className="w-6 h-6 text-[#6aee87]" />
+              </Button>
 
-                  <Button
-                    isIconOnly
-                    as={Link}
-                    className="border-2 border-[#1a1a1a] bg-[#0a0a0a] hover:border-[#4CAF50]"
-                    href={siteConfig.links.discord}
-                    variant="flat"
-                  >
-                    <FaDiscord className="w-6 h-6 text-[#6aee87]" />
-                  </Button>
-                </div>
+              <Button
+                isIconOnly
+                as={Link}
+                className="border-2 border-[#1a1a1a] bg-[#0a0a0a] hover:border-[#4CAF50]"
+                href={siteConfig.links.discord}
+                variant="flat"
+              >
+                <FaDiscord className="w-6 h-6 text-[#6aee87]" />
+              </Button>
+            </div>
 
-                {/* Авторизация (мобильная) */}
-                <div className="mt-6 flex justify-center">
-                  <AuthButton />
-                </div>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+            {/* Авторизация (мобильная) */}
+            <div className="mt-6 flex justify-center">
+              <AuthButton />
+            </div>
+          </div>
+        </motion.div>
       </NavbarMenu>
     </NextUINavbar>
   );
