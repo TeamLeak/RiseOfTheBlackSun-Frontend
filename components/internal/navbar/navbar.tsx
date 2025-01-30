@@ -1,6 +1,6 @@
 "use client";
 import { motion, AnimatePresence } from "framer-motion";
-import {FiBook, FiBox, FiMessageSquare} from "react-icons/fi";
+import { FiBook, FiBox, FiMessageSquare } from "react-icons/fi";
 import { RiCoinLine } from "react-icons/ri";
 import { FaDiscord, FaTelegramPlane } from "react-icons/fa";
 import {

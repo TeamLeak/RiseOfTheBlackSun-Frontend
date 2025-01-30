@@ -5,9 +5,9 @@ import {
   FileText,
   ShieldAlert,
   Handshake,
-  ChevronRight,
   Download,
-  PrinterIcon, ChevronLeft,
+  PrinterIcon,
+  ChevronLeft,
 } from "lucide-react";
 import React, { useState, useRef, useCallback } from "react";
 import { cn } from "@heroui/react";
@@ -427,121 +427,123 @@ export default function DocumentsPage() {
   const containerRef = useRef(null);
 
   return (
-      <div className="min-h-screen bg-gradient-to-br from-neutral-950 to-black">
-        <nav className="sticky top-0 z-50 border-b border-neutral-800 bg-black/80 backdrop-blur-lg">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
-            <div className="flex items-center gap-2 group">
-              <div className="h-8 w-8 bg-blue-400/10 rounded-lg flex items-center justify-center group-hover:bg-blue-400/20 transition-colors">
-                <FileText className="text-blue-400" />
-              </div>
-              <span className="text-xl font-semibold hidden sm:block">Юридический портал</span>
+    <div className="min-h-screen bg-gradient-to-br from-neutral-950 to-black">
+      <nav className="sticky top-0 z-50 border-b border-neutral-800 bg-black/80 backdrop-blur-lg">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-2 group">
+            <div className="h-8 w-8 bg-blue-400/10 rounded-lg flex items-center justify-center group-hover:bg-blue-400/20 transition-colors">
+              <FileText className="text-blue-400" />
             </div>
-
-            <motion.div
-                animate={{ opacity: 1 }}
-                className="flex items-center gap-6"
-                initial={{ opacity: 0 }}
-            >
-              <button className="flex items-center gap-2 px-3 py-2 bg-neutral-900 hover:bg-neutral-800 rounded-lg transition-colors">
-                <Download size={18} />
-                <span className="hidden md:inline">Экспорт документов</span>
-              </button>
-            </motion.div>
+            <span className="text-xl font-semibold hidden sm:block">
+              Юридический портал
+            </span>
           </div>
-        </nav>
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12 grid grid-cols-1 lg:grid-cols-12 gap-8">
-          <aside className="lg:col-span-3 space-y-6 lg:sticky lg:top-24 h-auto lg:h-[calc(100vh-200px)] overflow-y-auto">
-            <div className="border border-neutral-800 rounded-xl p-4 bg-black/30 backdrop-blur-lg">
-              <h3 className="text-sm font-semibold text-neutral-400 mb-4">
-                Документация
-              </h3>
-              <div className="space-y-2">
-                {documents.map((doc) => (
-                    <button
-                        key={doc.id}
-                        className={cn(
-                            "w-full flex items-center justify-between px-3 sm:px-4 py-2 sm:py-3 rounded-lg",
-                            "transition-colors hover:bg-neutral-900",
-                            selectedDocId === doc.id ? "bg-neutral-900" : ""
-                        )}
-                        onClick={() => setSelectedDocId(doc.id)}
-                    >
-                      <div className="flex items-center gap-3">
-                        <doc.icon className={cn("w-5 h-5", doc.color)} />
-                        <span className="text-sm sm:text-base">{doc.title}</span>
-                      </div>
-                      <ChevronLeft className="w-4 h-4 text-neutral-500" />
-                    </button>
-                ))}
-              </div>
+          <motion.div
+            animate={{ opacity: 1 }}
+            className="flex items-center gap-6"
+            initial={{ opacity: 0 }}
+          >
+            <button className="flex items-center gap-2 px-3 py-2 bg-neutral-900 hover:bg-neutral-800 rounded-lg transition-colors">
+              <Download size={18} />
+              <span className="hidden md:inline">Экспорт документов</span>
+            </button>
+          </motion.div>
+        </div>
+      </nav>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12 grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <aside className="lg:col-span-3 space-y-6 lg:sticky lg:top-24 h-auto lg:h-[calc(100vh-200px)] overflow-y-auto">
+          <div className="border border-neutral-800 rounded-xl p-4 bg-black/30 backdrop-blur-lg">
+            <h3 className="text-sm font-semibold text-neutral-400 mb-4">
+              Документация
+            </h3>
+            <div className="space-y-2">
+              {documents.map((doc) => (
+                <button
+                  key={doc.id}
+                  className={cn(
+                    "w-full flex items-center justify-between px-3 sm:px-4 py-2 sm:py-3 rounded-lg",
+                    "transition-colors hover:bg-neutral-900",
+                    selectedDocId === doc.id ? "bg-neutral-900" : "",
+                  )}
+                  onClick={() => setSelectedDocId(doc.id)}
+                >
+                  <div className="flex items-center gap-3">
+                    <doc.icon className={cn("w-5 h-5", doc.color)} />
+                    <span className="text-sm sm:text-base">{doc.title}</span>
+                  </div>
+                  <ChevronLeft className="w-4 h-4 text-neutral-500" />
+                </button>
+              ))}
             </div>
+          </div>
 
-            <motion.div
-                animate={{ opacity: previewDoc ? 1 : 0 }}
-                className="absolute left-full ml-4 w-72 bg-black/90 backdrop-blur-lg rounded-xl p-4 border border-neutral-800 shadow-xl hidden lg:block"
-                style={{ pointerEvents: previewDoc ? "auto" : "none" }}
-            >
-              {previewDoc && (
-                  <>
-                    <h4 className="text-sm font-semibold mb-2">
-                      {documents.find((d) => d.id === previewDoc)?.title}
-                    </h4>
-                    <p className="text-xs text-neutral-400">
-                      Последнее обновление:{" "}
-                      {documents.find((d) => d.id === previewDoc)?.lastUpdate}
-                    </p>
-                    <div className="mt-4 pt-4 border-t border-neutral-800">
-                      <div className="flex items-center gap-2 text-xs">
-                        <span className="text-neutral-400">Секций:</span>
-                        <span className="text-blue-400">
+          <motion.div
+            animate={{ opacity: previewDoc ? 1 : 0 }}
+            className="absolute left-full ml-4 w-72 bg-black/90 backdrop-blur-lg rounded-xl p-4 border border-neutral-800 shadow-xl hidden lg:block"
+            style={{ pointerEvents: previewDoc ? "auto" : "none" }}
+          >
+            {previewDoc && (
+              <>
+                <h4 className="text-sm font-semibold mb-2">
+                  {documents.find((d) => d.id === previewDoc)?.title}
+                </h4>
+                <p className="text-xs text-neutral-400">
+                  Последнее обновление:{" "}
+                  {documents.find((d) => d.id === previewDoc)?.lastUpdate}
+                </p>
+                <div className="mt-4 pt-4 border-t border-neutral-800">
+                  <div className="flex items-center gap-2 text-xs">
+                    <span className="text-neutral-400">Секций:</span>
+                    <span className="text-blue-400">
                       {documents.find((d) => d.id === previewDoc)?.sections}
                     </span>
-                      </div>
-                    </div>
-                  </>
-              )}
-            </motion.div>
-          </aside>
+                  </div>
+                </div>
+              </>
+            )}
+          </motion.div>
+        </aside>
 
-          <main ref={containerRef} className="lg:col-span-9">
-            <AnimatePresence mode="wait">
-              {selectedDocId ? (
-                  <DocumentContent key={selectedDocId} id={selectedDocId} />
-              ) : (
-                  <motion.div
-                      animate={{ opacity: 1 }}
-                      className="p-6 sm:p-8 bg-black/50 backdrop-blur-xl rounded-2xl border border-neutral-800 shadow-2xl text-center text-neutral-500"
-                      initial={{ opacity: 0 }}
-                  >
-                    Выберите документ для просмотра
-                  </motion.div>
-              )}
-            </AnimatePresence>
-          </main>
-        </div>
-
-        <div className="fixed inset-0 pointer-events-none z-[-1]">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,#1a1a1a_0%,transparent_70%)]" />
-          {[...Array(50)].map((_, i) => (
+        <main ref={containerRef} className="lg:col-span-9">
+          <AnimatePresence mode="wait">
+            {selectedDocId ? (
+              <DocumentContent key={selectedDocId} id={selectedDocId} />
+            ) : (
               <motion.div
-                  key={i}
-                  animate={{
-                    opacity: [0, 0.5, 0],
-                    transition: {
-                      duration: 3 + Math.random() * 5,
-                      repeat: Infinity,
-                      delay: Math.random() * 3,
-                    },
-                  }}
-                  className="absolute w-0.5 h-0.5 bg-blue-400/20 rounded-full"
-                  initial={{
-                    top: `${Math.random() * 100}%`,
-                    left: `${Math.random() * 100}%`,
-                  }}
-              />
-          ))}
-        </div>
+                animate={{ opacity: 1 }}
+                className="p-6 sm:p-8 bg-black/50 backdrop-blur-xl rounded-2xl border border-neutral-800 shadow-2xl text-center text-neutral-500"
+                initial={{ opacity: 0 }}
+              >
+                Выберите документ для просмотра
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </main>
       </div>
+
+      <div className="fixed inset-0 pointer-events-none z-[-1]">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,#1a1a1a_0%,transparent_70%)]" />
+        {[...Array(50)].map((_, i) => (
+          <motion.div
+            key={i}
+            animate={{
+              opacity: [0, 0.5, 0],
+              transition: {
+                duration: 3 + Math.random() * 5,
+                repeat: Infinity,
+                delay: Math.random() * 3,
+              },
+            }}
+            className="absolute w-0.5 h-0.5 bg-blue-400/20 rounded-full"
+            initial={{
+              top: `${Math.random() * 100}%`,
+              left: `${Math.random() * 100}%`,
+            }}
+          />
+        ))}
+      </div>
+    </div>
   );
 }
