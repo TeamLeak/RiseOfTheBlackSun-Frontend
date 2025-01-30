@@ -25,7 +25,6 @@ export default function NewsPage() {
   const [posts, setPosts] = useState<NewsPost[]>([]);
   const [selectedPost, setSelectedPost] = useState<NewsPost | null>(null);
   const [loading, setLoading] = useState(true);
-  const [scrollProgress, setScrollProgress] = useState(0);
 
   const calculateReadingTime = (text: string) => {
     const wordsPerMinute = 200;
@@ -44,28 +43,12 @@ export default function NewsPage() {
 
         setPosts(data.posts);
       } catch (error) {
-        console.error("Error fetching news:", error);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchPosts();
-  }, []);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const scrollY = window.scrollY;
-      const windowHeight = window.innerHeight;
-      const documentHeight = document.documentElement.scrollHeight;
-      const progress = (scrollY / (documentHeight - windowHeight)) * 100;
-
-      setScrollProgress(progress);
-    };
-
-    window.addEventListener("scroll", handleScroll);
-
-    return () => window.removeEventListener("scroll", handleScroll);
+    fetchPosts().then(() => {});
   }, []);
 
   const LoadingSkeleton = () => (
@@ -98,15 +81,6 @@ export default function NewsPage() {
 
   return (
     <div className="min-h-screen bg-[#080808] relative overflow-x-hidden">
-      <div className="fixed top-0 left-0 right-0 h-1.5 bg-[#1a1a1a] z-50">
-        <motion.div
-          animate={{ width: `${scrollProgress}%` }}
-          className="h-full bg-gradient-to-r from-[#5EA8FF] to-[#3D7BFF]"
-          initial={{ width: 0 }}
-          transition={{ type: "spring", stiffness: 100 }}
-        />
-      </div>
-
       <GlowingParticles color="#3D7BFF20" density={60} />
 
       <div className="max-w-7xl mx-auto px-4 py-24 relative z-10">

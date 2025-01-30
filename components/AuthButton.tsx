@@ -41,22 +41,28 @@ const AuthButton: React.FC = () => {
   };
 
   const handleLogin = async (email: string, password: string) => {
-    const response = await fetch("/api/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
-    });
+    // const response = await fetch("/api/login", {
+    //   method: "POST",
+    //   headers: { "Content-Type": "application/json" },
+    //   body: JSON.stringify({ email, password }),
+    // });
+    //
+    // const data = await response.json();
 
-    const data = await response.json();
+    document.cookie = `jwt-token=${"token"}; path=/`;
+    setUsername("Player");
+    setIsAuthenticated(true);
+    router.push("/profile");
 
-    if (data.token) {
-      document.cookie = `jwt-token=${data.token}; path=/`;
-      setUsername(data.username || "Player");
-      setIsAuthenticated(true);
-      router.push("/profile");
-    }
+    // if (data.token) {
+    //   document.cookie = `jwt-token=${data.token}; path=/`;
+    //   setUsername(data.username || "Player");
+    //   setIsAuthenticated(true);
+    //   router.push("/profile");
+    // }
   };
 
+  // @ts-ignore
   return (
     <>
       {isAuthenticated ? (
@@ -95,14 +101,6 @@ const AuthButton: React.FC = () => {
                 >
                   <span className="text-[#8a8a8a] hover:text-[#6aee87]">
                     Профиль
-                  </span>
-                </DropdownItem>
-                <DropdownItem
-                  className="hover:bg-[#1a1a1a] px-3 py-2 cursor-pointer"
-                  onClick={() => router.push("/settings")}
-                >
-                  <span className="text-[#8a8a8a] hover:text-[#6aee87]">
-                    Настройки
                   </span>
                 </DropdownItem>
                 <DropdownItem
