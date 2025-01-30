@@ -63,6 +63,7 @@ const AuthButton: React.FC = () => {
   };
 
   // @ts-ignore
+  // @ts-ignore
   return (
     <>
       {isAuthenticated ? (
@@ -89,13 +90,11 @@ const AuthButton: React.FC = () => {
           <AnimatePresence>
             {isOpen && (
               <DropdownMenu
-                animate={{ opacity: 1, y: 0 }}
                 as={motion.div}
                 className="border-2 border-[#1a1a1a] bg-[#0a0a0a] p-1 min-w-[200px]"
-                exit={{ opacity: 0, y: -10 }}
-                initial={{ opacity: 0, y: -10 }}
               >
                 <DropdownItem
+                  key={""}
                   className="hover:bg-[#1a1a1a] px-3 py-2 cursor-pointer"
                   onClick={() => router.push("/profile")}
                 >
@@ -104,6 +103,7 @@ const AuthButton: React.FC = () => {
                   </span>
                 </DropdownItem>
                 <DropdownItem
+                  key={""}
                   className="hover:bg-[#1a1a1a] px-3 py-2 cursor-pointer"
                   onClick={handleLogout}
                 >
