@@ -127,7 +127,7 @@ export default function ServersPage() {
                   whileHover={{ y: -5 }}
                 >
                   <div className="group relative h-full bg-[#0a0a0a] border-2 border-[#1a1a1a] rounded-2xl overflow-hidden hover:border-[#4CAF50]/30 transition-all">
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] to-transparent z-10" />
+                    <div className="absolute inset-0 pointer-events-none bg-gradient-to-t " />
 
                     <div className="p-6 space-y-4">
                       <div className="flex justify-between items-start">

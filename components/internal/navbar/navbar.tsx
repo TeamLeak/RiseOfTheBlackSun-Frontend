@@ -30,6 +30,13 @@ const menuItems = [
     delay: 0.2,
   },
   {
+    name: "Сервера",
+    icon: FiBox,
+    href: "/servers",
+    color: "text-blue-400",
+    delay: 0.15,
+  },
+  {
     name: "Магазин",
     icon: RiCoinLine,
     href: "/store",
@@ -37,11 +44,11 @@ const menuItems = [
     delay: 0.1,
   },
   {
-    name: "Сервера",
-    icon: FiBox,
-    href: "/servers",
-    color: "text-blue-400",
-    delay: 0.2,
+    name: "Обратная связь",
+    icon: FiMessageSquare,
+    href: "/feedback",
+    color: "text-emerald-400",
+    delay: 0.3,
   },
   {
     name: "Документы",
@@ -49,13 +56,6 @@ const menuItems = [
     href: "/documents",
     color: "text-purple-400",
     delay: 0.5,
-  },
-  {
-    name: "Форум",
-    icon: FiMessageSquare,
-    href: siteConfig.links.forum,
-    color: "text-emerald-400",
-    delay: 0.3,
   },
 ];
 

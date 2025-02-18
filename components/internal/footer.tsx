@@ -98,7 +98,7 @@ export const Footer = () => {
                   link={"/documents"}
                   text="Правила"
                 />
-                <LinkItem icon={<TbPrison />} link={"/banlist"} text="Баны" />
+                <LinkItem icon={<TbPrison />} link={"/punishments"} text="Наказания" />
               </div>
             </div>
 
@@ -112,7 +112,7 @@ export const Footer = () => {
               </motion.h3>
               <div className="space-y-3">
                 <LinkItem icon="⚔️" link={"/store"} text="Магазин" />
-                <LinkItem icon="🛡️" link={"/help"} text="Поддержка" />
+                <LinkItem icon="🛡️" link={"/feedback"} text="Поддержка" />
                 <LinkItem icon="📜" link={"/documents"} text="Документы" />
               </div>
             </div>
