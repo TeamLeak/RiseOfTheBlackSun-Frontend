@@ -180,7 +180,6 @@ const LinkItem = ({
   link: string;
 }) => (
   <motion.div whileHover={{ x: 5 }}>
-    {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
     <a
       className="flex items-center gap-2 text-[#8a8a8a] hover:text-[#6aee87] font-minecraft group"
       href={link}
