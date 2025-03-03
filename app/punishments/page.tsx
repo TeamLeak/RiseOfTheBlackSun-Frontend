@@ -1,233 +1,268 @@
 "use client";
 
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { FiLoader } from "react-icons/fi";
+import { FiLoader, FiSearch } from "react-icons/fi";
+import { ISourceOptions } from "@tsparticles/engine";
+import { loadSlim } from "@tsparticles/slim";
+import Particles, { initParticlesEngine } from "@tsparticles/react";
 
-// Тип данных для наказания
+// Тип данных для наказания (поля в PascalCase)
 type Punishment = {
-  id: number;
-  punisher: string;
-  punished: string;
-  reason: string;
-  duration: string;
-  type: "mute" | "ban" | "kick" | "warning";
-  date: string;
+  ID: number;
+  CreatedAt: string;
+  UpdatedAt: string;
+  Punisher: string;
+  Punished: string;
+  Reason: string;
+  Duration: string;
+  Type: "mute" | "ban" | "kick" | "warning";
+  Date: string;
 };
 
-// Функция генерации случайных данных (эмуляция получения данных с сервера)
-const generateDummyPunishments = (
-  startId: number,
-  count: number,
-): Punishment[] => {
-  const types: Punishment["type"][] = ["mute", "ban", "kick", "warning"];
-  const reasons = [
-    "Нарушение правил чата",
-    "Использование читов",
-    "Неспортивное поведение",
-    "Саботаж в командной игре",
-    "Мошенничество",
-    "Подстрекательство к конфликту",
-  ];
-  const durations = [
-    "1 час",
-    "24 часа",
-    "7 дней",
-    "Перманентно",
-    "Предупреждение",
-  ];
-  let result: Punishment[] = [];
-
-  for (let i = 0; i < count; i++) {
-    const id = startId + i;
-    const type = types[Math.floor(Math.random() * types.length)];
-    // Генерируем случайную дату за последние 115 дней
-    const randomTimestamp =
-      Date.now() - Math.floor(Math.random() * 115 * 24 * 60 * 60 * 1000);
-    const date = new Date(randomTimestamp).toLocaleDateString("ru-RU");
-
-    result.push({
-      id,
-      punisher: `Администратор${Math.floor(Math.random() * 10) + 1}`,
-      punished: `Игрок${Math.floor(Math.random() * 1000) + 1}`,
-      reason: reasons[Math.floor(Math.random() * reasons.length)],
-      duration: durations[Math.floor(Math.random() * durations.length)],
-      type,
-      date,
-    });
-  }
-
-  return result;
+// @ts-ignore
+const particlesOptions: ISourceOptions = {
+  background: {
+    color: "#000000",
+  },
+  particles: {
+    number: {
+      value: 50,
+      density: {
+        enable: true,
+        // @ts-ignore
+        area: 800,
+      },
+    },
+    color: {
+      value: ["#ff0000", "#ff5a5a", "#ff8a8a", "#ffbdbd"],
+    },
+    opacity: {
+      value: 0.5,
+      // @ts-ignore
+      random: true,
+    },
+    size: {
+      value: 1.5,
+      // @ts-ignore
+      random: true,
+    },
+    move: {
+      enable: true,
+      speed: 1,
+      direction: "none",
+      random: true,
+      straight: false,
+      outModes: "out",
+    },
+    links: {
+      enable: true,
+      color: "#ff0000",
+      opacity: 0.2,
+      distance: 150,
+    },
+  },
 };
+
+// Функция форматирования даты
+const formatDate = (dateStr: string) =>
+    dateStr ? new Date(dateStr).toLocaleString("ru-RU") : "N/A";
 
 const PunishmentsPage = () => {
   const [punishments, setPunishments] = useState<Punishment[]>([]);
   const [loading, setLoading] = useState(false);
-  const [filter, setFilter] = useState<
-    "all" | "mute" | "ban" | "kick" | "warning"
-  >("all");
+  const [filter] = useState<"all" | "mute" | "ban" | "kick" | "warning">("all");
   const [searchPunisher, setSearchPunisher] = useState("");
   const [searchPunished, setSearchPunished] = useState("");
-  const observer = useRef<IntersectionObserver | null>(null);
-  const loadMoreRef = useRef<HTMLDivElement | null>(null);
+  const [isMobile, setIsMobile] = useState(false);
+  const [particlesInit, setParticlesInit] = useState(false);
 
-  // Функция подгрузки данных
-  const loadMore = useCallback(() => {
-    setLoading(true);
-    // Эмуляция запроса на сервер с задержкой
-    setTimeout(() => {
-      setPunishments((prev) => [
-        ...prev,
-        ...generateDummyPunishments(prev.length + 1, 20),
-      ]);
-      setLoading(false);
-    }, 1500);
+  // Инициализация tsparticles
+  useEffect(() => {
+    initParticlesEngine(async (engine) => {
+      await loadSlim(engine);
+    }).then(() => setParticlesInit(true));
   }, []);
 
-  // Первоначальная загрузка
+  // Отслеживание ширины экрана для мобильного режима
   useEffect(() => {
-    loadMore();
-  }, [loadMore]);
+    const checkMobile = () => setIsMobile(window.innerWidth <= 768);
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
 
-  // Используем IntersectionObserver для бесконечной прокрутки
-  useEffect(() => {
-    if (loading) return;
-    if (observer.current) observer.current.disconnect();
-    observer.current = new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting) {
-        loadMore();
+  // Функция загрузки данных с сервера
+  const fetchPunishments = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch("https://punishmentsservice.riseoftheblacksun.eu/punishments");
+      if (!response.ok) {
+        console.error("Ошибка при получении данных с сервера");
+        return;
       }
-    });
-    if (loadMoreRef.current) {
-      observer.current.observe(loadMoreRef.current);
+      const data: Punishment[] = await response.json();
+      setPunishments(data);
+    } catch (error) {
+      console.error("Ошибка при запросе данных:", error);
+    } finally {
+      setLoading(false);
     }
-  }, [loading, loadMore]);
+  };
 
-  // Фильтрация данных: по типу наказания, по "Кто наказал" и по "Кто был наказан"
+  // Загружаем данные при монтировании компонента
+  useEffect(() => {
+    fetchPunishments().then(() => {});
+  }, []);
+
+  // Фильтрация данных с защитой
   const filteredPunishments = punishments.filter((p) => {
-    const matchesType = filter === "all" ? true : p.type === filter;
-    const matchesPunisher = p.punisher
-      .toLowerCase()
-      .includes(searchPunisher.toLowerCase());
-    const matchesPunished = p.punished
-      .toLowerCase()
-      .includes(searchPunished.toLowerCase());
-
+    const punisher = p.Punisher || "";
+    const punished = p.Punished || "";
+    const matchesType = filter === "all" ? true : p.Type === filter;
+    const matchesPunisher = punisher.toLowerCase().includes(searchPunisher.toLowerCase());
+    const matchesPunished = punished.toLowerCase().includes(searchPunished.toLowerCase());
     return matchesType && matchesPunisher && matchesPunished;
   });
 
-  return (
-    <div className="max-w-7xl mx-auto px-4 py-12">
-      <h2 className="text-3xl font-bold mb-6 text-red-400 text-center">
-        Список наказаний
-      </h2>
-
-      {/* Фильтры по типу наказания */}
-      <div className="flex justify-center mb-4 space-x-4">
-        {(["all", "mute", "ban", "kick", "warning"] as const).map((type) => (
-          <button
-            key={type}
-            className={`px-4 py-2 rounded-full border transition-colors duration-300 ${
-              filter === type
-                ? "bg-red-600 text-white border-red-600 shadow-lg"
-                : "bg-[#400000] text-red-300 border-red-300 hover:bg-red-500 hover:text-white"
-            }`}
-            onClick={() => setFilter(type)}
-          >
-            {type === "all"
-              ? "Все"
-              : type === "mute"
-                ? "Мут"
-                : type === "ban"
-                  ? "Бан"
-                  : type === "kick"
+  const TypeBadge = ({ type }: { type: Punishment["Type"] }) => {
+    const colors = {
+      mute: "bg-purple-600",
+      ban: "bg-red-600",
+      kick: "bg-orange-600",
+      warning: "bg-yellow-600",
+    };
+    return (
+        <span className={`${colors[type]} px-2 py-1 rounded-full text-xs font-semibold`}>
+        {type === "mute"
+            ? "Мут"
+            : type === "ban"
+                ? "Бан"
+                : type === "kick"
                     ? "Кик"
                     : "Предупреждение"}
-          </button>
-        ))}
-      </div>
+      </span>
+    );
+  };
 
-      {/* Поля поиска */}
-      <div className="flex flex-col md:flex-row justify-center mb-6 gap-4">
-        <input
-          className="w-full max-w-md px-4 py-2 rounded-full border border-red-300 bg-[#400000] text-red-200 placeholder-red-300 focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors"
-          placeholder="Поиск по тому, кто наказал..."
-          type="text"
-          value={searchPunisher}
-          onChange={(e) => setSearchPunisher(e.target.value)}
-        />
-        <input
-          className="w-full max-w-md px-4 py-2 rounded-full border border-red-300 bg-[#400000] text-red-200 placeholder-red-300 focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors"
-          placeholder="Поиск по тому, кто нарушил..."
-          type="text"
-          value={searchPunished}
-          onChange={(e) => setSearchPunished(e.target.value)}
-        />
-      </div>
-
-      {/* Таблица */}
-      <div className="overflow-x-auto">
-        <table className="min-w-full text-left border-collapse shadow-xl">
-          <thead className="bg-[#400000] text-red-300 uppercase">
-            <tr>
-              <th className="px-4 py-3 border border-red-300">Номер</th>
-              <th className="px-4 py-3 border border-red-300">Кто наказал</th>
-              <th className="px-4 py-3 border border-red-300">Кто нарушил</th>
-              <th className="px-4 py-3 border border-red-300">Тип наказания</th>
-              <th className="px-4 py-3 border border-red-300">Причина</th>
-              <th className="px-4 py-3 border border-red-300">Срок</th>
-              <th className="px-4 py-3 border border-red-300">Дата</th>
-            </tr>
-          </thead>
-          <tbody className="bg-[#200000] text-red-200">
-            {filteredPunishments.map((p) => (
-              <motion.tr
-                key={p.id}
-                animate={{ opacity: 1, y: 0 }}
-                className="hover:bg-[#400000] transition-colors"
-                initial={{ opacity: 0, y: 10 }}
-                transition={{ duration: 0.3 }}
-              >
-                <td className="px-4 py-2 border border-red-300">{p.id}</td>
-                <td className="px-4 py-2 border border-red-300">
-                  {p.punisher}
-                </td>
-                <td className="px-4 py-2 border border-red-300">
-                  {p.punished}
-                </td>
-                <td className="px-4 py-2 border border-red-300 uppercase">
-                  {p.type === "mute"
-                    ? "Мут"
-                    : p.type === "ban"
-                      ? "Бан"
-                      : p.type === "kick"
-                        ? "Кик"
-                        : "Предупреждение"}
-                </td>
-                <td className="px-4 py-2 border border-red-300">{p.reason}</td>
-                <td className="px-4 py-2 border border-red-300">
-                  {p.duration}
-                </td>
-                <td className="px-4 py-2 border border-red-300">{p.date}</td>
-              </motion.tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      {/* Загрузчик для подгрузки следующей страницы */}
-      <div ref={loadMoreRef} className="flex justify-center mt-4">
-        {loading && (
-          <motion.div
-            animate={{ opacity: 1 }}
-            className="text-red-500 text-3xl"
-            initial={{ opacity: 0 }}
-          >
-            <FiLoader className="animate-spin" />
-          </motion.div>
+  return (
+      <div className="min-h-screen relative overflow-hidden">
+        {particlesInit && (
+            <Particles id="tsparticles" options={particlesOptions} className="absolute inset-0 z-0" />
         )}
+
+        <div className="max-w-7xl mx-auto px-4 py-12 relative z-10">
+          <motion.h2
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="text-4xl font-bold mb-8 text-center bg-gradient-to-r from-red-400 to-red-600 bg-clip-text text-transparent"
+          >
+            История наказаний
+          </motion.h2>
+
+          <div className="flex flex-col gap-4 mb-8">
+            <div className="relative">
+              <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-red-400" />
+              <input
+                  className="w-full pl-12 pr-4 py-3 rounded-2xl border border-red-400/30 bg-black/50 backdrop-blur-sm text-red-200 placeholder-red-300 focus:outline-none focus:ring-2 focus:ring-red-500"
+                  placeholder="Поиск по администратору..."
+                  value={searchPunisher}
+                  onChange={(e) => setSearchPunisher(e.target.value)}
+              />
+            </div>
+            <div className="relative">
+              <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-red-400" />
+              <input
+                  className="w-full pl-12 pr-4 py-3 rounded-2xl border border-red-400/30 bg-black/50 backdrop-blur-sm text-red-200 placeholder-red-300 focus:outline-none focus:ring-2 focus:ring-red-500"
+                  placeholder="Поиск по игроку..."
+                  value={searchPunished}
+                  onChange={(e) => setSearchPunished(e.target.value)}
+              />
+            </div>
+          </div>
+
+          {isMobile ? (
+              <div className="space-y-4">
+                {filteredPunishments.map((p) => (
+                    <motion.div
+                        key={p.ID}
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        className="p-4 rounded-xl border border-red-400/30 bg-black/50 backdrop-blur-sm"
+                    >
+                      <div className="flex justify-between items-start mb-2">
+                        <span className="text-red-400 text-sm">#{p.ID || "N/A"}</span>
+                        <TypeBadge type={p.Type} />
+                      </div>
+                      <div className="space-y-2">
+                        <div>
+                          <span className="text-red-300">Админ: </span>
+                          <span className="text-red-100">{p.Punisher || "N/A"}</span>
+                        </div>
+                        <div>
+                          <span className="text-red-300">Игрок: </span>
+                          <span className="text-red-100">{p.Punished || "N/A"}</span>
+                        </div>
+                        <div>
+                          <span className="text-red-300">Причина: </span>
+                          <span className="text-red-100">{p.Reason || "N/A"}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <div>
+                            <span className="text-red-300">Срок: </span>
+                            <span className="text-red-100">{p.Duration || "N/A"}</span>
+                          </div>
+                          <span className="text-red-400 text-sm">{formatDate(p.Date)}</span>
+                        </div>
+                      </div>
+                    </motion.div>
+                ))}
+              </div>
+          ) : (
+              <div className="rounded-xl border border-red-400/30 bg-black/50 backdrop-blur-sm overflow-hidden">
+                <table className="w-full">
+                  <thead className="bg-red-900/20">
+                  <tr>
+                    {["#", "Админ", "Игрок", "Тип", "Причина", "Срок", "Дата"].map((header, idx) => (
+                        <th key={idx} className="px-4 py-3 text-left text-red-300 text-sm font-medium">
+                          {header}
+                        </th>
+                    ))}
+                  </tr>
+                  </thead>
+                  <tbody className="divide-y divide-red-400/30">
+                  {filteredPunishments.map((p) => (
+                      <motion.tr
+                          key={p.ID}
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          className="hover:bg-red-900/10 transition-colors"
+                      >
+                        <td className="px-4 py-3 text-red-200">{p.ID || "N/A"}</td>
+                        <td className="px-4 py-3 text-red-200">{p.Punisher || "N/A"}</td>
+                        <td className="px-4 py-3 text-red-200">{p.Punished || "N/A"}</td>
+                        <td className="px-4 py-3">
+                          <TypeBadge type={p.Type} />
+                        </td>
+                        <td className="px-4 py-3 text-red-200">{p.Reason || "N/A"}</td>
+                        <td className="px-4 py-3 text-red-200">{p.Duration || "N/A"}</td>
+                        <td className="px-4 py-3 text-red-400 text-sm">{formatDate(p.Date)}</td>
+                      </motion.tr>
+                  ))}
+                  </tbody>
+                </table>
+              </div>
+          )}
+
+          {loading && (
+              <div className="flex justify-center mt-8">
+                <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1 }} className="text-red-500 text-2xl">
+                  <FiLoader />
+                </motion.div>
+              </div>
+          )}
+        </div>
       </div>
-    </div>
   );
 };
 

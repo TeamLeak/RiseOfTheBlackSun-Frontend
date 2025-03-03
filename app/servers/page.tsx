@@ -38,7 +38,7 @@ export default function ServersPage() {
     const fetchServers = async () => {
       try {
         const response = await fetch(
-          "https://riseoftheblacksun.eu/api/getservers.php",
+          "https://serversservice.riseoftheblacksun.eu/servers",
         );
         const data = await response.json();
 

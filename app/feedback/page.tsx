@@ -1,46 +1,84 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { useState } from "react";
-import { FiCheckCircle, FiLoader } from "react-icons/fi";
-
-import { GlowingParticles } from "@/components/particles";
-
-// Пример проверки наличия аккаунта через JWT токен в кэше (не используется):
-// const jwtToken = localStorage.getItem('jwtToken');
-// if (jwtToken) {
-//   // Здесь можно добавить логику проверки валидности токена и получения данных аккаунта
-// }
+import React, { useEffect, useState } from "react";
+import {
+  FiCheckCircle,
+  FiLoader,
+  FiUploadCloud,
+  FiInfo,
+  FiAlertTriangle,
+} from "react-icons/fi";
+import { GavelIcon } from "lucide-react";
+import { BiBulb } from "react-icons/bi";
+import Particles, { initParticlesEngine } from "@tsparticles/react";
+import { ISourceOptions } from "@tsparticles/engine";
+import { loadSlim } from "@tsparticles/slim";
 
 type FeedbackType = "complaint" | "suggestion" | "appeal";
 
-// Функция генерации уникального номера заявки
-const generateRequestNumber = (): string => {
-  const timestamp = Date.now().toString(36).toUpperCase();
-  const randomPart = Math.floor(Math.random() * 1e8)
-    .toString(36)
-    .toUpperCase();
-
-  return `${timestamp}-${randomPart}`;
+const particlesOptions: ISourceOptions = {
+  background: {
+    color: "#000000",
+  },
+  particles: {
+    number: {
+      value: 50,
+      density: {
+        enable: true,
+        // @ts-ignore
+        area: 800,
+      },
+    },
+    color: {
+      value: ["#ff0000", "#ff5a5a", "#ff8a8a", "#ffbdbd"],
+    },
+    opacity: {
+      value: 0.5,
+      // @ts-ignore
+      random: true,
+    },
+    size: {
+      value: 1.5,
+      // @ts-ignore
+      random: true,
+    },
+    move: {
+      enable: true,
+      speed: 1,
+      direction: "none",
+      random: true,
+      straight: false,
+      outModes: "out",
+    },
+    links: {
+      enable: true,
+      color: "#ff0000",
+      opacity: 0.2,
+      distance: 150,
+    },
+  },
 };
 
 const FeedbackPage = () => {
   const [activeTab, setActiveTab] = useState<FeedbackType>("complaint");
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [subject, setSubject] = useState("");
-  const [description, setDescription] = useState("");
-  const [evidence, setEvidence] = useState(""); // ссылка на доказательства
-  const [file, setFile] = useState<File | null>(null);
-  const [appealId, setAppealId] = useState(""); // Номер решения для апелляции
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    subject: "",
+    description: "",
+    evidence: "",
+    appealId: "",
+  });
+  // Теперь поддерживаем несколько файлов – массив файлов
+  const [files, setFiles] = useState<File[]>([]);
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [requestNumber, setRequestNumber] = useState("");
 
-  // Обработчик загрузки файла
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      setFile(e.target.files[0]);
+    if (e.target.files) {
+      setFiles(Array.from(e.target.files));
     }
   };
 
@@ -48,251 +86,288 @@ const FeedbackPage = () => {
     e.preventDefault();
     setLoading(true);
 
-    // Собираем все данные в один объект
-    const formData = {
-      type: activeTab,
-      name,
-      email,
-      subject,
-      description,
-      evidence,
-      fileName: file ? file.name : null,
-      appealId: activeTab === "appeal" ? appealId : null,
+    // Собираем данные в FormData для отправки на сервер
+    const data = new FormData();
+    data.append("name", formData.name);
+    data.append("email", formData.email);
+    data.append("subject", formData.subject);
+    data.append("description", formData.description);
+    data.append("evidence", formData.evidence);
+    data.append("appealId", formData.appealId);
+    data.append("feedbackType", activeTab);
+
+    // Добавляем все выбранные файлы под ключом "files"
+    files.forEach((file) => {
+      data.append("files", file);
+    });
+
+    try {
+      const response = await fetch("https://feedbackservice.riseoftheblacksun.eu/feedback", {
+        method: "POST",
+        body: data,
+      });
+      const result = await response.json();
+      if (response.ok) {
+        setRequestNumber(result.requestNumber);
+        setSubmitted(true);
+      } else {
+        console.error("Ошибка отправки:", result.error);
+      }
+    } catch (error) {
+      console.error("Ошибка:", error);
+    }
+    setLoading(false);
+  };
+  const TypeButton = ({ type }: { type: FeedbackType }) => {
+    const config = {
+      complaint: {
+        icon: <FiAlertTriangle />,
+        text: "Подать жалобу",
+        color: "bg-red-500",
+      },
+      suggestion: {
+        icon: <BiBulb />,
+        text: "Сделать предложение",
+        color: "bg-purple-500",
+      },
+      appeal: {
+        icon: <GavelIcon />,
+        text: "Обжаловать решение",
+        color: "bg-orange-500",
+      },
     };
 
-    console.log("Отправка данных на сервер:", formData);
-
-    // Имитируем отправку данных на сервер с задержкой 2 секунды
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-
-    // Генерируем уникальный номер заявки
-    const newRequestNumber = generateRequestNumber();
-
-    setRequestNumber(newRequestNumber);
-
-    setLoading(false);
-    setSubmitted(true);
-
-    // Здесь можно выполнить fetch или axios запрос для отправки formData вместе с newRequestNumber
-    // Пример:
-    // fetch('/api/feedback', {
-    //   method: 'POST',
-    //   headers: { 'Content-Type': 'application/json' },
-    //   body: JSON.stringify({ ...formData, requestNumber: newRequestNumber })
-    // });
+    return (
+        <motion.button
+            className={`flex flex-col items-center justify-center w-full p-4 rounded-xl gap-2 transition-all ${
+                activeTab === type
+                    ? "bg-opacity-100 text-white"
+                    : "bg-opacity-20 text-gray-300 hover:bg-opacity-30"
+            } ${config[type].color}`}
+            onClick={() => setActiveTab(type)}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+        >
+          <div className="text-3xl p-3 rounded-full bg-black bg-opacity-20">
+            {config[type].icon}
+          </div>
+          <span className="text-sm font-medium text-center">
+          {config[type].text}
+        </span>
+        </motion.button>
+    );
   };
 
+  const [particlesInit, setParticlesInit] = useState(false);
+
+  useEffect(() => {
+    initParticlesEngine(async (engine) => {
+      await loadSlim(engine);
+    }).then(() => setParticlesInit(true));
+  }, []);
+
   return (
-    <div className="min-h-screen relative overflow-hidden">
-      <GlowingParticles color="#FF000020" density={50} />
+      <div className="min-h-screen relative overflow-hidden">
+        {particlesInit && (
+            <Particles
+                id="tsparticles"
+                options={particlesOptions}
+                className="absolute inset-0 z-0"
+            />
+        )}
 
-      <div className="max-w-4xl mx-auto px-4 py-12">
-        {/* Табуляция для выбора типа формы */}
-        <div className="flex mb-8">
-          <motion.button
-            className={`flex-1 py-3 text-center font-bold ${
-              activeTab === "complaint"
-                ? "bg-red-700 text-white"
-                : "bg-[#400000] text-red-300"
-            } rounded-l-lg`}
-            whileHover={{ scale: 1.02 }}
-            onClick={() => setActiveTab("complaint")}
+        <div className="max-w-4xl mx-auto px-4 py-8 relative z-10">
+          <motion.h1
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="text-3xl md:text-4xl font-bold mb-6 text-center text-white"
           >
-            Жалоба
-          </motion.button>
-          <motion.button
-            className={`flex-1 py-3 text-center font-bold ${
-              activeTab === "suggestion"
-                ? "bg-red-700 text-white"
-                : "bg-[#400000] text-red-300"
-            }`}
-            whileHover={{ scale: 1.02 }}
-            onClick={() => setActiveTab("suggestion")}
-          >
-            Предложение
-          </motion.button>
-          <motion.button
-            className={`flex-1 py-3 text-center font-bold ${
-              activeTab === "appeal"
-                ? "bg-red-700 text-white"
-                : "bg-[#400000] text-red-300"
-            } rounded-r-lg`}
-            whileHover={{ scale: 1.02 }}
-            onClick={() => setActiveTab("appeal")}
-          >
-            Апелляция
-          </motion.button>
-        </div>
+            Обратная связь
+          </motion.h1>
 
-        {/* Форма обратной связи */}
-        <AnimatePresence mode={"wait"}>
-          {!submitted ? (
-            <motion.form
-              key={activeTab}
-              animate={{ opacity: 1, scale: 1 }}
-              className="bg-[#2a0000] border-2 border-[#FF0000] rounded-xl p-8 space-y-6 relative overflow-hidden shadow-2xl"
-              exit={{ opacity: 0, scale: 0.95 }}
-              initial={{ opacity: 0, scale: 0.95 }}
-              transition={{ duration: 0.5 }}
-              onSubmit={handleSubmit}
-            >
-              {/* Эффект мерцающей подсветки */}
-              <div className="absolute inset-0 pointer-events-none bg-[linear-gradient(45deg,transparent_25%,#FF000020_50%,transparent_75%)] bg-[length:200%_200%] animate-shine" />
+          {/* Навигация */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-8">
+            <TypeButton type="complaint" />
+            <TypeButton type="suggestion" />
+            <TypeButton type="appeal" />
+          </div>
 
-              <h2 className="text-2xl font-bold mb-4 text-red-300">
-                {activeTab === "complaint"
-                  ? "Отправить жалобу"
-                  : activeTab === "suggestion"
-                    ? "Отправить предложение"
-                    : "Подать апелляцию"}
-              </h2>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-red-200 mb-2">
-                    Имя пользователя
-                  </label>
-                  <motion.input
-                    required
-                    className="w-full px-4 py-3 bg-[#400000] text-red-100 rounded-lg focus:ring-2 focus:ring-red-500 outline-none"
-                    type="text"
-                    value={name}
-                    whileFocus={{ scale: 1.02 }}
-                    onChange={(e) => setName(e.target.value)}
-                  />
-                </div>
-                <div>
-                  <label className="block text-red-200 mb-2">Email</label>
-                  <motion.input
-                    required
-                    className="w-full px-4 py-3 bg-[#400000] text-red-100 rounded-lg focus:ring-2 focus:ring-red-500 outline-none"
-                    type="email"
-                    value={email}
-                    whileFocus={{ scale: 1.02 }}
-                    onChange={(e) => setEmail(e.target.value)}
-                  />
-                </div>
-              </div>
-
-              {activeTab === "appeal" && (
-                <div>
-                  <label className="block text-red-200 mb-2">
-                    Номер решения, которое вы хотите обжаловать
-                  </label>
-                  <motion.input
-                    required
-                    className="w-full px-4 py-3 bg-[#400000] text-red-100 rounded-lg focus:ring-2 focus:ring-red-500 outline-none"
-                    type="text"
-                    value={appealId}
-                    whileFocus={{ scale: 1.02 }}
-                    onChange={(e) => setAppealId(e.target.value)}
-                  />
-                </div>
-              )}
-
-              <div>
-                <label className="block text-red-200 mb-2">Тема</label>
-                <motion.input
-                  required
-                  className="w-full px-4 py-3 bg-[#400000] text-red-100 rounded-lg focus:ring-2 focus:ring-red-500 outline-none"
-                  type="text"
-                  value={subject}
-                  whileFocus={{ scale: 1.02 }}
-                  onChange={(e) => setSubject(e.target.value)}
-                />
-              </div>
-
-              <div>
-                <label className="block text-red-200 mb-2">
-                  {activeTab === "appeal"
-                    ? "Опишите причину апелляции, приведите все доказательства, ссылки и скриншоты"
-                    : "Описание проблемы или предложения (укажите все доказательства, ссылки, скриншоты)"}
-                </label>
-                <motion.textarea
-                  required
-                  className="w-full px-4 py-3 bg-[#400000] text-red-100 rounded-lg focus:ring-2 focus:ring-red-500 outline-none min-h-[120px]"
-                  value={description}
-                  whileFocus={{ scale: 1.02 }}
-                  onChange={(e) => setDescription(e.target.value)}
-                />
-              </div>
-
-              <div>
-                <label className="block text-red-200 mb-2">
-                  Ссылка на доказательства (если есть)
-                </label>
-                <motion.input
-                  className="w-full px-4 py-3 bg-[#400000] text-red-100 rounded-lg focus:ring-2 focus:ring-red-500 outline-none"
-                  type="url"
-                  value={evidence}
-                  whileFocus={{ scale: 1.02 }}
-                  onChange={(e) => setEvidence(e.target.value)}
-                />
-              </div>
-
-              <div>
-                <label className="block text-red-200 mb-2">
-                  Прикрепить файл (скриншоты, видео, PDF)
-                </label>
-                <motion.input
-                  accept="image/*,video/*,application/pdf"
-                  className="w-full px-4 py-3 bg-[#400000] text-red-100 rounded-lg focus:ring-2 focus:ring-red-500 outline-none"
-                  type="file"
-                  whileFocus={{ scale: 1.02 }}
-                  onChange={handleFileChange}
-                />
-              </div>
-
-              <motion.button
-                className="w-full py-3 bg-gradient-to-r from-red-500 to-red-900 text-white rounded-lg font-bold shadow-lg hover:shadow-2xl transition-shadow"
-                type="submit"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                {activeTab === "appeal" ? "Подать апелляцию" : "Отправить"}
-              </motion.button>
-
-              {/* Индикатор загрузки */}
-              {loading && (
-                <motion.div
-                  animate={{ opacity: 1 }}
-                  className="absolute inset-0 flex items-center justify-center bg-[#00000080] z-10"
-                  exit={{ opacity: 0 }}
-                  initial={{ opacity: 0 }}
+          <AnimatePresence mode="wait">
+            {!submitted ? (
+                <motion.form
+                    key={activeTab}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -20 }}
+                    className="bg-white bg-opacity-5 backdrop-blur-lg rounded-2xl p-6 border border-white border-opacity-10 shadow-xl"
+                    onSubmit={handleSubmit}
                 >
-                  <FiLoader className="text-6xl text-red-500 animate-spin" />
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <label className="text-white text-sm font-medium">
+                          Имя пользователя
+                        </label>
+                        <input
+                            required
+                            className="w-full px-4 py-3 bg-white bg-opacity-5 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-20"
+                            value={formData.name}
+                            onChange={(e) =>
+                                setFormData({ ...formData, name: e.target.value })
+                            }
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <label className="text-white text-sm font-medium">
+                          Email
+                        </label>
+                        <input
+                            required
+                            type="email"
+                            className="w-full px-4 py-3 bg-white bg-opacity-5 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-20"
+                            value={formData.email}
+                            onChange={(e) =>
+                                setFormData({ ...formData, email: e.target.value })
+                            }
+                        />
+                      </div>
+                    </div>
+
+                    {activeTab === "appeal" && (
+                        <div className="space-y-2">
+                          <label className="text-white text-sm font-medium">
+                            Номер решения
+                          </label>
+                          <input
+                              required
+                              className="w-full px-4 py-3 bg-white bg-opacity-5 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-20"
+                              value={formData.appealId}
+                              onChange={(e) =>
+                                  setFormData({ ...formData, appealId: e.target.value })
+                              }
+                          />
+                        </div>
+                    )}
+
+                    <div className="space-y-2">
+                      <label className="text-white text-sm font-medium">
+                        Тема
+                      </label>
+                      <input
+                          required
+                          className="w-full px-4 py-3 bg-white bg-opacity-5 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-20"
+                          value={formData.subject}
+                          onChange={(e) =>
+                              setFormData({ ...formData, subject: e.target.value })
+                          }
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="text-white text-sm font-medium flex items-center gap-2">
+                        Описание
+                        <FiInfo className="text-white text-opacity-60" />
+                      </label>
+                      <textarea
+                          required
+                          className="w-full px-4 py-3 bg-white bg-opacity-5 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-20 min-h-[120px]"
+                          value={formData.description}
+                          onChange={(e) =>
+                              setFormData({ ...formData, description: e.target.value })
+                          }
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="text-white text-sm font-medium">
+                        Ссылка на доказательства
+                      </label>
+                      <input
+                          type="url"
+                          className="w-full px-4 py-3 bg-white bg-opacity-5 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-20"
+                          value={formData.evidence}
+                          onChange={(e) =>
+                              setFormData({ ...formData, evidence: e.target.value })
+                          }
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="text-white text-sm font-medium flex items-center gap-2">
+                        Прикрепить файлы
+                        <FiUploadCloud className="text-white text-opacity-60" />
+                      </label>
+                      <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-white border-opacity-20 rounded-lg cursor-pointer bg-white bg-opacity-5 hover:bg-opacity-10 transition-colors">
+                        <div className="text-center">
+                          <FiUploadCloud className="text-2xl text-white text-opacity-60 mb-2 mx-auto" />
+                          <p className="text-sm text-white text-opacity-80">
+                            {files.length > 0
+                                ? files.map((f) => f.name).join(", ")
+                                : "Нажмите для загрузки"}
+                          </p>
+                          <p className="text-xs text-white text-opacity-50 mt-1">
+                            (PNG, JPG, PDF, MP4 до 50MB)
+                          </p>
+                        </div>
+                        <input
+                            type="file"
+                            multiple
+                            className="hidden"
+                            onChange={handleFileChange}
+                            accept="image/*,video/*,application/pdf"
+                        />
+                      </label>
+                    </div>
+
+                    <motion.button
+                        className="w-full py-4 bg-white bg-opacity-10 hover:bg-opacity-20 rounded-lg font-medium text-white transition-all relative overflow-hidden"
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        type="submit"
+                    >
+                      {loading ? (
+                          <FiLoader className="animate-spin mx-auto" />
+                      ) : activeTab === "appeal" ? (
+                          "Подать апелляцию"
+                      ) : (
+                          "Отправить"
+                      )}
+                    </motion.button>
+                  </div>
+
+                  {loading && (
+                      <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center rounded-2xl">
+                        <FiLoader className="text-4xl text-white animate-spin" />
+                      </div>
+                  )}
+                </motion.form>
+            ) : (
+                <motion.div
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="bg-white bg-opacity-5 backdrop-blur-lg rounded-2xl p-8 border border-white border-opacity-10 text-center shadow-xl"
+                >
+                  <div className="space-y-4">
+                    <FiCheckCircle className="text-5xl text-green-400 mx-auto animate-pulse" />
+                    <h2 className="text-2xl font-bold text-white">Заявка принята!</h2>
+                    <div className="bg-white bg-opacity-5 p-4 rounded-lg">
+                      <p className="text-white text-opacity-80 mb-2">
+                        Номер вашей заявки:
+                      </p>
+                      <p className="text-xl font-mono font-bold text-green-400">
+                        {requestNumber}
+                      </p>
+                    </div>
+                    <p className="text-white text-opacity-70 text-sm">
+                      Ответ придёт на указанный email в течение 3 рабочих дней
+                    </p>
+                  </div>
                 </motion.div>
-              )}
-            </motion.form>
-          ) : (
-            <motion.div
-              animate={{ opacity: 1, scale: 1 }}
-              className="bg-[#2a0000] border-2 border-[#FF0000] rounded-xl p-8 text-center shadow-2xl"
-              exit={{ opacity: 0, scale: 0.95 }}
-              initial={{ opacity: 0, scale: 0.95 }}
-              transition={{ duration: 0.5 }}
-            >
-              <FiCheckCircle className="text-6xl text-red-500 mx-auto mb-4" />
-              <h2 className="text-2xl font-bold text-red-300 mb-2">Спасибо!</h2>
-              <p className="text-red-200 mb-4">
-                Ваше сообщение успешно отправлено. Номер вашей заявки:
-              </p>
-              <motion.div
-                animate={{ scale: 1 }}
-                className="text-3xl font-extrabold text-red-500 bg-[#400000] px-6 py-3 rounded-lg inline-block"
-                initial={{ scale: 0.8 }}
-                transition={{ duration: 0.5 }}
-              >
-                {requestNumber}
-              </motion.div>
-              <p className="text-red-200 mt-4">
-                Мы свяжемся с вами в ближайшее время.
-              </p>
-            </motion.div>
-          )}
-        </AnimatePresence>
+            )}
+          </AnimatePresence>
+        </div>
       </div>
-    </div>
   );
 };
 

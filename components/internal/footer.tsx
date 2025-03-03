@@ -126,7 +126,7 @@ export const Footer = () => {
           initial={{ opacity: 0 }}
         >
           <div className="text-[#5a5f65] text-xs font-minecraft space-y-1">
-            <p>ОГРНИП 1234567890123 · ИП Дробот И.И.</p>
+            <p>ОГРНИП 1234567890123 · ИП Фёдоров Д.В.</p>
             <p className="text-[#6a6a6a]">
               RISE OF THE BLACK SUN не связан с Mojang AB. Коммерческая
               деятельность соответствует политике Mojang AB

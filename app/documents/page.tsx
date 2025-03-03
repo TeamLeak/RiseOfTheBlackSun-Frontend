@@ -1366,29 +1366,6 @@ export default function DocumentsPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-neutral-950 to-black">
-      <nav className="sticky top-0 z-50 border-b border-neutral-800 bg-black/80 backdrop-blur-lg">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-2 group">
-            <div className="h-8 w-8 bg-blue-400/10 rounded-lg flex items-center justify-center group-hover:bg-blue-400/20 transition-colors">
-              <FileText className="text-blue-400" />
-            </div>
-            <span className="text-xl font-semibold hidden sm:block">
-              Юридический портал
-            </span>
-          </div>
-
-          <motion.div
-            animate={{ opacity: 1 }}
-            className="flex items-center gap-6"
-            initial={{ opacity: 0 }}
-          >
-            <button className="flex items-center gap-2 px-3 py-2 bg-neutral-900 hover:bg-neutral-800 rounded-lg transition-colors">
-              <Download size={18} />
-              <span className="hidden md:inline">Экспорт документов</span>
-            </button>
-          </motion.div>
-        </div>
-      </nav>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12 grid grid-cols-1 lg:grid-cols-12 gap-8">
         <aside className="lg:col-span-3 space-y-6 lg:sticky lg:top-24 h-auto lg:h-[calc(100vh-200px)] overflow-y-auto">

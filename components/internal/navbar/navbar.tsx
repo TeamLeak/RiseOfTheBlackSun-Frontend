@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { FiBook, FiBox, FiMessageSquare, FiMenu, FiX } from "react-icons/fi";
+import {FiBook, FiBox, FiMessageSquare, FiMenu, FiX, FiCode} from "react-icons/fi";
 import { RiCoinLine } from "react-icons/ri";
 import { FaDiscord, FaTelegramPlane } from "react-icons/fa";
 import {
@@ -18,17 +18,9 @@ import { usePathname } from "next/navigation";
 import { cn } from "@heroui/react";
 import { CgFileDocument } from "react-icons/cg";
 
-import AuthButton from "@/components/AuthButton";
 import { siteConfig } from "@/config/site";
 
 const menuItems = [
-  {
-    name: "Новости",
-    icon: FiBook,
-    href: "/news",
-    color: "text-blue-400",
-    delay: 0.2,
-  },
   {
     name: "Сервера",
     icon: FiBox,
@@ -51,6 +43,13 @@ const menuItems = [
     delay: 0.3,
   },
   {
+    name: "Вакансии",
+    icon: FiCode,
+    href: "/jobs",
+    color: "text-emerald-400",
+    delay: 0.3,
+  },
+  {
     name: "Документы",
     icon: CgFileDocument,
     href: "/documents",
@@ -65,7 +64,7 @@ export const Navbar = () => {
 
   return (
     <NextUINavbar
-      className="bg-[#080808]/90 backdrop-blur-lg border-b-2 border-[#1a1a1a] shadow-pixel"
+      className="z-50 bg-[#080808]/90 backdrop-blur-lg border-b-2 border-[#1a1a1a] shadow-pixel"
       isBlurred={false}
       isMenuOpen={isMenuOpen}
       maxWidth="2xl"
