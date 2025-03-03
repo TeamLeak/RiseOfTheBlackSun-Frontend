@@ -159,7 +159,7 @@ const JobPage = () => {
 
   // Получаем вакансии с бекенда при монтировании компонента
   useEffect(() => {
-    fetch("/api/vacancies")
+    fetch("https://vacansiesservice.riseoftheblacksun.eu/api/vacancies")
         .then((res) => res.json())
         .then((data) => {
           if (data?.vacancies) {
