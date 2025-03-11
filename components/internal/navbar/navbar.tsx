@@ -19,6 +19,7 @@ import { cn } from "@heroui/react";
 import { CgFileDocument } from "react-icons/cg";
 
 import { siteConfig } from "@/config/site";
+import {GiHelp} from "react-icons/gi";
 
 const menuItems = [
   {
@@ -46,6 +47,13 @@ const menuItems = [
     name: "Вакансии",
     icon: FiCode,
     href: "/jobs",
+    color: "text-emerald-400",
+    delay: 0.3,
+  },
+  {
+    name: "Гайды",
+    icon: GiHelp,
+    href: "https://guide.riseoftheblacksun.eu/",
     color: "text-emerald-400",
     delay: 0.3,
   },
