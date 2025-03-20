@@ -82,7 +82,7 @@ export const metadata: Metadata = {
     "Minecraft towny",
     "Minecraft SMP",
     "join Minecraft server",
-    "play Minecraft online",
+    "game Minecraft online",
     "online Minecraft community",
     "top Minecraft servers",
     "Minecraft game modes",
