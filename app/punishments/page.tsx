@@ -1,3 +1,5 @@
+// @ts-ignore
+
 "use client";
 
 import React, { useState, useEffect } from "react";
@@ -80,6 +82,7 @@ const PunishmentsPage = () => {
   // Инициализация tsparticles
   useEffect(() => {
     initParticlesEngine(async (engine) => {
+      // @ts-ignore
       await loadSlim(engine);
     }).then(() => setParticlesInit(true));
   }, []);
