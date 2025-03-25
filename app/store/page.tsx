@@ -89,12 +89,38 @@ const TopUpForm = ({ onSubmit, clientIP }: TopUpFormProps) => {
   const [amount, setAmount] = useState("");
   const [playerName, setPlayerName] = useState("");
   const [email, setEmail] = useState("");
+  const [agreement, setAgreement] = useState(false);
+  const [error, setError] = useState("");
 
   // Преобразование рублей в монеты (например, 1 рубль = 3 монеты)
   const calculateCoins = (amountRub: number) => Math.floor(amountRub * 3);
 
+  const validateAmount = (value: string) => {
+    const num = parseFloat(value);
+    if (isNaN(num)) return "Введите корректную сумму";
+    if (num < 100) return "Минимальная сумма пополнения 100₽";
+    if (num > 50000) return "Максимальная сумма пополнения 50,000₽";
+    return "";
+  };
+
+  const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setAmount(value);
+    setError(validateAmount(value));
+  };
+
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    const amountError = validateAmount(amount);
+    if (amountError) {
+      setError(amountError);
+      return;
+    }
+    if (!agreement) {
+      setError("Необходимо согласиться с условиями оферты");
+      return;
+    }
+
     const numericAmount = Math.round(parseFloat(amount) * 100);
     const payload = {
       order_id: "topup-" + Date.now(),
@@ -103,7 +129,6 @@ const TopUpForm = ({ onSubmit, clientIP }: TopUpFormProps) => {
       client_ip: clientIP,
       player_name: playerName,
       email: email,
-      // Формируем чек с одной позицией "Пополнение баланса"
       receipt: {
         Email: email,
         Phone: "",
@@ -127,70 +152,135 @@ const TopUpForm = ({ onSubmit, clientIP }: TopUpFormProps) => {
           initial={{ scale: 0.95, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ duration: 0.4, delay: 0.2 }}
-          className="bg-[#0a0a0a] border border-[#FFD700]/30 rounded-xl p-6 relative overflow-hidden shadow-md"
+          className="bg-black/50 backdrop-blur-md border border-white/20 rounded-lg p-6 relative overflow-hidden shadow-lg "
       >
-        <div className="absolute inset-0 pointer-events-none bg-[linear-gradient(135deg,transparent,rgba(255,215,0,0.15))] animate-shine" />
-        <h2 className="text-xl md:text-2xl font-bold mb-4 text-center">
+        <div className="absolute inset-0 pointer-events-none bg-[linear-gradient(135deg,transparent,rgba(239,68,68,0.15))] animate-shine" />
+        <div className="absolute top-0 left-0 w-full h-0.5 bg-gradient-to-r from-red-500 via-orange-500 to-red-500" />
+        
+        <h2 className="text-3xl md:text-4xl font-bold mb-6 text-center bg-gradient-to-r from-red-500 to-orange-500 bg-clip-text text-transparent">
           Пополнение баланса
         </h2>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block mb-1 text-base">Ваш никнейм</label>
+
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="space-y-1.5">
+            <label className="block text-xs uppercase tracking-wider text-red-500 font-medium">Ваш никнейм</label>
             <motion.input
                 type="text"
                 placeholder="Введите никнейм"
                 required
                 value={playerName}
                 onChange={(e) => setPlayerName(e.target.value)}
-                whileFocus={{ scale: 1.02 }}
-                className="w-full px-3 py-2 bg-[#1a1a1a] rounded focus:ring-2 focus:ring-[#FFD700] focus:outline-none"
+                whileFocus={{ scale: 1.01 }}
+                className="w-full px-4 py-2.5 bg-white/5 backdrop-blur-sm rounded-md border border-white/10 focus:border-red-500 focus:ring-1 focus:ring-red-500/20 focus:outline-none text-white placeholder-white/50 text-base transition-all duration-200"
             />
           </div>
-          <div>
-            <label className="block mb-1 text-base">Email</label>
+
+          <div className="space-y-1.5">
+            <label className="block text-xs uppercase tracking-wider text-red-500 font-medium">Email</label>
             <motion.input
                 type="email"
                 placeholder="example@mail.com"
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                whileFocus={{ scale: 1.02 }}
-                className="w-full px-3 py-2 bg-[#1a1a1a] rounded focus:ring-2 focus:ring-[#FFD700] focus:outline-none"
+                whileFocus={{ scale: 1.01 }}
+                className="w-full px-4 py-2.5 bg-white/5 backdrop-blur-sm rounded-md border border-white/10 focus:border-red-500 focus:ring-1 focus:ring-red-500/20 focus:outline-none text-white placeholder-white/50 text-base transition-all duration-200"
             />
           </div>
-          <div>
-            <label className="block mb-1 text-base">
+
+          <div className="space-y-1.5">
+            <label className="block text-xs uppercase tracking-wider text-red-500 font-medium">
               Сумма пополнения (в рублях)
             </label>
-            <motion.input
-                type="number"
-                placeholder="Введите сумму"
-                required
-                value={amount}
-                onChange={(e) => setAmount(e.target.value)}
-                whileFocus={{ scale: 1.02 }}
-                className="w-full px-3 py-2 bg-[#1a1a1a] rounded focus:ring-2 focus:ring-[#FFD700] focus:outline-none"
-            />
+            <div className="relative">
+              <motion.input
+                  type="number"
+                  placeholder="Введите сумму от 100₽ до 50,000₽"
+                  required
+                  value={amount}
+                  onChange={handleAmountChange}
+                  min="100"
+                  max="50000"
+                  whileFocus={{ scale: 1.01 }}
+                  className={`w-full px-4 py-2.5 bg-white/5 backdrop-blur-sm rounded-md border ${
+                      error ? "border-red-500" : "border-white/10"
+                  } focus:border-red-500 focus:ring-1 focus:ring-red-500/20 focus:outline-none text-white placeholder-white/50 text-base transition-all duration-200`}
+              />
+              {error && (
+                  <motion.p
+                      initial={{ opacity: 0, y: -5 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="absolute -bottom-5 left-0 text-red-500 text-xs"
+                  >
+                    {error}
+                  </motion.p>
+              )}
+            </div>
           </div>
+
           <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="p-3 bg-[#1a1a1a] rounded flex items-center gap-2"
+              className="p-4 bg-white/5 backdrop-blur-sm rounded-md border border-white/10 flex items-center gap-3"
           >
-            <GiCoins className="text-xl text-[#FFD700]" />
-            <span className="text-base">
-              Вы получите: {calculateCoins(parseFloat(amount) || 0)} монет
-            </span>
+            <div className="flex-shrink-0">
+              <GiCoins className="text-2xl text-red-500" />
+            </div>
+            <div>
+              <p className="text-base font-medium text-white">
+                Вы получите: {calculateCoins(parseFloat(amount) || 0)} монет
+              </p>
+              <p className="text-xs text-white/50 mt-0.5">
+                Курс: 1₽ = 3 монеты
+              </p>
+            </div>
           </motion.div>
+
+          <div className="flex items-center gap-2">
+            <motion.div
+                whileTap={{ scale: 0.95 }}
+                className="flex items-center"
+            >
+              <input
+                  type="checkbox"
+                  id="agreement"
+                  checked={agreement}
+                  onChange={(e) => setAgreement(e.target.checked)}
+                  className="w-4 h-4 rounded border-white/20 text-red-500 focus:ring-red-500/20 bg-white/5"
+              />
+            </motion.div>
+            <label htmlFor="agreement" className="text-xs text-white/70 leading-tight">
+              Я согласен с <a href="/documents" className="text-red-500 hover:text-red-400 underline">условиями оферты</a> и подтверждаю, что все указанные данные корректны
+            </label>
+          </div>
+
           <motion.button
-              whileHover={{ scale: 1.05, transition: { duration: 0.1 } }}
+              whileHover={{ scale: 1.01, transition: { duration: 0.1 } }}
               whileTap={{ scale: 0.98, transition: { duration: 0.1 } }}
               type="submit"
-              className="w-full py-2 bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-black rounded font-bold shadow hover:shadow-lg transition-shadow"
+              disabled={!agreement || !!error}
+              className={`w-full py-2.5 rounded-md font-medium text-base shadow-lg transition-all duration-200 ${
+                  !agreement || !!error
+                      ? "bg-red-500/50 cursor-not-allowed"
+                      : "bg-red-500 hover:bg-red-600 hover:shadow-xl"
+              } text-white`}
           >
             Пополнить баланс
           </motion.button>
         </form>
+
+        <div className="mt-6 pt-4 border-t border-white/10">
+          <div className="grid grid-cols-2 gap-3 text-center">
+            <div>
+              <p className="text-xs text-white/50">Минимальная сумма</p>
+              <p className="text-sm font-medium text-white">100₽</p>
+            </div>
+            <div>
+              <p className="text-xs text-white/50">Максимальная сумма</p>
+              <p className="text-sm font-medium text-white">50,000₽</p>
+            </div>
+          </div>
+        </div>
       </motion.div>
   );
 };
@@ -209,44 +299,40 @@ const ProductCard = ({ pkg, onBuy }: ProductCardProps) => {
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.3 }}
-          whileHover={{ scale: 1.05, transition: { duration: 0.1 } }}
+          whileHover={{ scale: 1.02, transition: { duration: 0.1 } }}
           whileTap={{ scale: 0.98, transition: { duration: 0.1 } }}
-          className="relative bg-[#1a1a1a] rounded overflow-hidden shadow hover:shadow-md transition flex flex-col"
+          className="relative bg-white/5 backdrop-blur-sm rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-all duration-200 flex flex-col border border-white/10"
       >
-        {/* Изображение товара */}
-        <div className="relative h-56 w-full">
+        <div className="relative h-48 w-full">
           <Image
               src={pkg.image}
               alt={pkg.name}
               fill
-              className="object-cover transition-transform duration-200 hover:scale-105"
+              className="object-cover transition-transform duration-300 hover:scale-105"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent" />
         </div>
-        {/* Контент карточки */}
         <div className="p-4 flex flex-col flex-grow">
-          <h3 className="text-xl font-bold mb-2">{pkg.name}</h3>
-          <div className="flex items-center gap-2 text-[#FFD700] mb-2">
+          <h3 className="text-lg font-bold mb-2 text-white">{pkg.name}</h3>
+          <div className="flex items-center gap-2 text-red-500 mb-3">
             <GiCoins className="text-2xl" />
             <span className="text-2xl font-semibold">{pkg.basePrice} ₽</span>
           </div>
-          <ul className="list-disc pl-4 space-y-1 text-sm text-gray-300 flex-grow">
+          <ul className="list-disc pl-4 space-y-1 text-sm text-white/70 flex-grow">
             {pkg.features.map((feature, i) => (
                 <li key={i}>{feature}</li>
             ))}
           </ul>
-          {/* Кнопка "Купить" расположена строго внизу карточки */}
           <motion.button
-              whileHover={{ scale: 1.03, transition: { duration: 0.1 } }}
-              whileTap={{ scale: 0.97, transition: { duration: 0.1 } }}
+              whileHover={{ scale: 1.02, transition: { duration: 0.1 } }}
+              whileTap={{ scale: 0.98, transition: { duration: 0.1 } }}
               onClick={() => onBuy(pkg)}
-              className="mt-4 w-full py-2 bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-black rounded font-bold shadow transition"
+              className="mt-4 w-full py-2 bg-red-500 hover:bg-red-600 text-white rounded-md font-medium text-sm shadow-lg hover:shadow-xl transition-all duration-200"
           >
             Купить
           </motion.button>
         </div>
-        {/* Метка скидки */}
-        <div className="absolute top-2 right-2 bg-[#FFD700] text-black px-2 py-0.5 rounded text-xs font-bold shadow">
+        <div className="absolute top-3 right-3 bg-red-500 text-white px-2 py-0.5 rounded-full text-xs font-bold shadow-lg">
           -20%
         </div>
       </motion.div>
@@ -310,7 +396,7 @@ const PurchaseModal = ({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-[#080808]/90 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+            className="fixed inset-0 bg-black/90 backdrop-blur-md z-50 flex items-center justify-center p-4"
             onClick={onClose}
         >
           <motion.div
@@ -318,58 +404,58 @@ const PurchaseModal = ({
               animate={{ scale: 1 }}
               exit={{ scale: 0.8 }}
               onClick={(e) => e.stopPropagation()}
-              className="relative bg-[#0a0a0a] rounded-xl border border-[#FFD700] p-6 max-w-md w-full shadow-lg"
+              className="relative bg-black/50 backdrop-blur-md rounded-lg border border-white/20 p-6 max-w-md w-full shadow-xl"
           >
             <button
                 onClick={onClose}
-                className="absolute top-3 right-3 p-1 hover:bg-[#1a1a1a] rounded-full"
+                className="absolute top-3 right-3 p-1.5 hover:bg-white/10 rounded-full transition-colors"
             >
-              <FiX className="text-xl text-white" />
+              <FiX className="text-lg text-white" />
             </button>
             <div className="space-y-4">
-              <h2 className="text-xl font-bold">{purchaseItem.name}</h2>
-              <div className="flex items-center gap-3 text-[#FFD700]">
+              <h2 className="text-2xl font-bold text-white">{purchaseItem.name}</h2>
+              <div className="flex items-center gap-2 text-red-500">
                 <GiCoins className="text-2xl" />
-                <span className="text-xl font-bold">{purchaseItem.basePrice} ₽</span>
+                <span className="text-2xl font-bold">{purchaseItem.basePrice} ₽</span>
               </div>
               <form onSubmit={handleSubmit} className="space-y-3">
                 <div>
-                  <label className="block mb-1 text-base">Имя пользователя</label>
+                  <label className="block mb-1.5 text-xs uppercase tracking-wider text-red-500 font-medium">Имя пользователя</label>
                   <input
                       type="text"
                       placeholder="Введите никнейм"
                       required
                       value={nickname}
                       onChange={(e) => setNickname(e.target.value)}
-                      className="w-full px-3 py-2 bg-[#1a1a1a] rounded focus:ring-2 focus:ring-[#FFD700] focus:outline-none"
+                      className="w-full px-4 py-2 bg-white/5 backdrop-blur-sm rounded-md border border-white/10 focus:border-red-500 focus:ring-1 focus:ring-red-500/20 focus:outline-none text-white placeholder-white/50 text-sm"
                   />
                 </div>
                 <div>
-                  <label className="block mb-1 text-base">Email</label>
+                  <label className="block mb-1.5 text-xs uppercase tracking-wider text-red-500 font-medium">Email</label>
                   <input
                       type="email"
                       placeholder="example@mail.com"
                       required
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="w-full px-3 py-2 bg-[#1a1a1a] rounded focus:ring-2 focus:ring-[#FFD700] focus:outline-none"
+                      className="w-full px-4 py-2 bg-white/5 backdrop-blur-sm rounded-md border border-white/10 focus:border-red-500 focus:ring-1 focus:ring-red-500/20 focus:outline-none text-white placeholder-white/50 text-sm"
                   />
                 </div>
                 <div>
-                  <label className="block mb-1 text-base">Промокод (если есть)</label>
+                  <label className="block mb-1.5 text-xs uppercase tracking-wider text-red-500 font-medium">Промокод (если есть)</label>
                   <input
                       type="text"
                       placeholder="Введите промокод"
                       value={promo}
                       onChange={(e) => setPromo(e.target.value)}
-                      className="w-full px-3 py-2 bg-[#1a1a1a] rounded focus:ring-2 focus:ring-[#FFD700] focus:outline-none"
+                      className="w-full px-4 py-2 bg-white/5 backdrop-blur-sm rounded-md border border-white/10 focus:border-red-500 focus:ring-1 focus:ring-red-500/20 focus:outline-none text-white placeholder-white/50 text-sm"
                   />
                 </div>
                 <motion.button
-                    whileHover={{ scale: 1.05, transition: { duration: 0.1 } }}
-                    whileTap={{ scale: 0.95, transition: { duration: 0.1 } }}
+                    whileHover={{ scale: 1.02, transition: { duration: 0.1 } }}
+                    whileTap={{ scale: 0.98, transition: { duration: 0.1 } }}
                     type="submit"
-                    className="w-full py-2 bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-black rounded font-bold shadow hover:shadow-md transition-shadow"
+                    className="w-full py-2.5 bg-red-500 hover:bg-red-600 text-white rounded-md font-medium text-sm shadow-lg hover:shadow-xl transition-all duration-200"
                 >
                   Купить
                 </motion.button>
@@ -471,33 +557,22 @@ export default function ShopPage() {
   }
 
   return (
-      <div className="relative z-10 bg-[#080808] py-8">
-        <div className="max-w-7xl mx-auto px-4 flex flex-col gap-8">
-          {/* Заголовок */}
-          <motion.h1
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4 }}
-              className="text-3xl md:text-4xl font-extrabold text-center bg-gradient-to-r from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent"
-          >
-            RISE OF THE BLACK SUN | ПОПОЛНЕНИЕ
-          </motion.h1>
+      <div className="relative z-10 bg-black min-h-screen py-8">
+        <div className="container mx-auto px-4 sm:px-6 md:px-8 flex flex-col gap-8">
 
-          {/* Форма пополнения баланса */}
           <TopUpForm onSubmit={createPayment} clientIP={clientIP} />
 
-          {/* Фильтр товаров */}
-          <div className="bg-[#0a0a0a] border border-[#FFD700]/30 rounded-xl p-4">
-            <h2 className="text-lg font-bold mb-2 text-center">Фильтр товаров</h2>
-            <div className="flex flex-col md:flex-row items-center gap-3 mb-3">
+          <div className="bg-black/50 backdrop-blur-md border border-white/20 rounded-lg p-4">
+            <h2 className="text-2xl font-bold mb-4 text-center text-white">Фильтр товаров</h2>
+            <div className="flex flex-wrap gap-2 mb-4">
               {["Все", "Косметика", "Ключи", "Расходники"].map((cat) => (
                   <button
                       key={cat}
                       onClick={() => setActiveCategory(cat)}
-                      className={`px-3 py-1 rounded ${
+                      className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
                           activeCategory === cat
-                              ? "bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-black"
-                              : "bg-[#1a1a1a] text-gray-300"
+                              ? "bg-red-500 hover:bg-red-600 text-white"
+                              : "bg-white/5 hover:bg-white/10 text-white border border-white/20"
                       }`}
                   >
                     {cat}
@@ -510,30 +585,28 @@ export default function ShopPage() {
                   placeholder="Поиск по названию..."
                   value={filter}
                   onChange={(e) => setFilter(e.target.value)}
-                  className="w-full px-3 py-2 bg-[#1a1a1a] rounded focus:ring-2 focus:ring-[#FFD700] focus:outline-none"
+                  className="w-full px-4 py-2 bg-white/5 backdrop-blur-sm rounded-md border border-white/10 focus:border-red-500 focus:ring-1 focus:ring-red-500/20 focus:outline-none text-white placeholder-white/50 text-sm"
               />
             </div>
           </div>
 
-          {/* Список товаров — адаптивная сетка для мобильных устройств */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {filteredPackages.map((pkg) => (
                 <ProductCard key={pkg.id} pkg={pkg} onBuy={setPurchaseItem} />
             ))}
           </div>
 
-          {/* Блок последних транзакций */}
           <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.3 }}
-              className="bg-[#0a0a0a] border border-[#1a1a1a] rounded-xl p-4 shadow"
+              className="bg-black/50 backdrop-blur-md border border-white/20 rounded-lg p-4 shadow-xl"
           >
-            <h2 className="text-xl font-bold mb-3 flex items-center gap-2 justify-center">
-              <FiClock className="text-[#FFD700]" />
+            <h2 className="text-2xl font-bold mb-4 flex items-center gap-2 justify-center text-white">
+              <FiClock className="text-red-500" />
               Последние покупки
             </h2>
-            <div className="space-y-2">
+            <div className="space-y-3">
               {transactions.length > 0 ? (
                   transactions.map((tx, index) => (
                       <motion.div
@@ -541,26 +614,25 @@ export default function ShopPage() {
                           initial={{ x: -20 }}
                           animate={{ x: 0 }}
                           transition={{ delay: index * 0.02, duration: 0.2 }}
-                          className="flex justify-between items-center p-3 bg-[#1a1a1a] rounded hover:bg-[#1a1a1a]/90 transition-colors shadow"
+                          className="flex justify-between items-center p-3 bg-white/5 backdrop-blur-sm rounded-md border border-white/10 hover:bg-white/10 transition-colors"
                       >
                         <div>
-                          <h3 className="font-bold text-base">{tx.user}</h3>
-                          <p className="text-xs text-gray-400">{tx.time}</p>
+                          <h3 className="font-bold text-base text-white">{tx.user}</h3>
+                          <p className="text-xs text-white/50">{tx.time}</p>
                         </div>
-                        <div className="flex items-center gap-1">
-                          <GiCoins className="text-xl text-[#FFD700]" />
-                          <span className="text-base font-semibold">+{tx.amount} ₽</span>
+                        <div className="flex items-center gap-1.5">
+                          <GiCoins className="text-xl text-red-500" />
+                          <span className="text-base font-semibold text-white">+{tx.amount} ₽</span>
                         </div>
                       </motion.div>
                   ))
               ) : (
-                  <p className="text-center text-gray-400">Покупок пока нет</p>
+                  <p className="text-center text-white/50 text-sm">Покупок пока нет</p>
               )}
             </div>
           </motion.div>
         </div>
 
-        {/* Модальное окно покупки */}
         <AnimatePresence>
           {purchaseItem && (
               <PurchaseModal

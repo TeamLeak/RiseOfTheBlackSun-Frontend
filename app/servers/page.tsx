@@ -14,8 +14,7 @@ type ServerItem = {
   hideCopyIP: boolean;
 };
 
-const gradientText =
-  "text-transparent bg-clip-text bg-gradient-to-r from-[#6aee87] to-[#4CAF50]";
+const gradientText = "text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-orange-500";
 
 export default function ServersPage() {
   const [servers, setServers] = useState<ServerItem[]>([]);
@@ -70,19 +69,19 @@ export default function ServersPage() {
           initial={{ opacity: 0, scale: 0.95 }}
           transition={{ duration: 0.3, delay: index * 0.1 }}
         >
-          <div className="h-full bg-[#0a0a0a] border-2 border-[#1a1a1a] rounded-2xl overflow-hidden">
+          <div className="h-full bg-white/5 backdrop-blur-sm border-2 border-white/10 rounded-md overflow-hidden">
             <div className="animate-pulse">
-              <div className="h-48 bg-[#1a1a1a]" />
+              <div className="h-48 bg-white/10" />
               <div className="p-6 space-y-4">
-                <div className="h-4 bg-[#1a1a1a] rounded w-1/3" />
-                <div className="h-6 bg-[#1a1a1a] rounded w-2/3" />
+                <div className="h-4 bg-white/10 rounded w-1/3" />
+                <div className="h-6 bg-white/10 rounded w-2/3" />
                 <div className="space-y-2">
-                  <div className="h-3 bg-[#1a1a1a] rounded" />
-                  <div className="h-3 bg-[#1a1a1a] rounded w-4/5" />
+                  <div className="h-3 bg-white/10 rounded" />
+                  <div className="h-3 bg-white/10 rounded w-4/5" />
                 </div>
                 <div className="flex justify-between items-center">
-                  <div className="h-8 bg-[#1a1a1a] rounded-lg w-24" />
-                  <div className="h-8 bg-[#1a1a1a] rounded-lg w-16" />
+                  <div className="h-8 bg-white/10 rounded-md w-24" />
+                  <div className="h-8 bg-white/10 rounded-md w-16" />
                 </div>
               </div>
             </div>
@@ -93,19 +92,19 @@ export default function ServersPage() {
   );
 
   return (
-    <div className="min-h-screen bg-[#080808] relative overflow-hidden">
-      <GlowingParticles color="#4CAF5020" density={50} />
+    <div className="min-h-screen bg-black relative overflow-hidden">
+      <GlowingParticles color="rgba(239, 68, 68, 0.2)" density={50} />
 
-      <div className="max-w-6xl mx-auto px-4 py-20 relative z-10">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 md:px-8 py-20 relative z-10">
         <motion.div
           animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-20"
+          className="text-center mb-16"
           initial={{ opacity: 0, y: 20 }}
         >
-          <h1 className={`text-5xl font-bold mb-4 ${gradientText}`}>
+          <h1 className={`text-6xl md:text-8xl font-bold mb-4 ${gradientText}`}>
             НАШИ СЕРВЕРА
           </h1>
-          <p className="text-[#8a8a8a] text-xl">
+          <p className="text-white/70 text-xl">
             Выберите свой путь в мире RISE OF THE BLACK SUN
           </p>
         </motion.div>
@@ -126,51 +125,49 @@ export default function ServersPage() {
                   transition={{ duration: 0.2 }}
                   whileHover={{ y: -5 }}
                 >
-                  <div className="group relative h-full bg-[#0a0a0a] border-2 border-[#1a1a1a] rounded-2xl overflow-hidden hover:border-[#4CAF50]/30 transition-all">
-                    <div className="absolute inset-0 pointer-events-none bg-gradient-to-t " />
+                  <div className="group relative h-full bg-white/5 backdrop-blur-sm border-l-2 border-white/10 rounded-md overflow-hidden hover:border-red-500 transition-all">
+                    <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-black via-black/50 to-transparent" />
 
                     <div className="p-6 space-y-4">
                       <div className="flex justify-between items-start">
                         {server.badge && (
-                          <span className="px-3 py-1 bg-[#4CAF50]/20 text-[#6aee87] text-sm rounded-full">
+                          <span className="px-3 py-1 bg-red-500/20 text-red-500 text-sm rounded-full">
                             {server.badge}
                           </span>
                         )}
-                        <FiServer className="text-2xl text-[#4CAF50]" />
+                        <FiServer className="text-2xl text-red-500" />
                       </div>
 
-                      <h3 className="text-xl font-semibold text-[#e0e0e0]">
+                      <h3 className="text-xl font-medium text-white">
                         {server.title}
                       </h3>
 
                       <div className="flex flex-col gap-3">
-                        <div className="p-3 bg-[#1a1a1a] rounded-lg relative">
+                        <div className="p-3 bg-white/5 rounded-md relative">
                           <div className="flex items-center justify-between gap-2">
                             <div>
-                              <p className="text-sm text-[#8a8a8a] mb-1">
-                                IP-адрес
-                              </p>
-                              <code className="text-[#6aee87] font-mono break-all">
+                              <p className="text-sm text-white/50 mb-1">IP-адрес</p>
+                              <code className="text-red-500 font-mono break-all">
                                 {server.ipAddress}
                               </code>
                             </div>
                             <button
-                              className="p-2 hover:bg-[#4CAF50]/10 rounded-lg transition-colors"
+                              className="p-2 hover:bg-red-500/10 rounded-md transition-colors"
                               title="Скопировать IP"
                               onClick={() => copyToClipboard(server.ipAddress)}
                             >
                               {copiedIP === server.ipAddress ? (
-                                <FiCheck className="text-[#4CAF50]" />
+                                <FiCheck className="text-red-500" />
                               ) : (
-                                <FiCopy className="text-[#8a8a8a] hover:text-[#6aee87]" />
+                                <FiCopy className="text-white/50 hover:text-red-500" />
                               )}
                             </button>
                           </div>
                         </div>
 
                         <button
-                          className="w-full px-4 py-2 bg-[#4CAF50]/10 text-[#6aee87] rounded-lg
-                            hover:bg-[#4CAF50]/20 transition-all flex items-center justify-between"
+                          className="w-full px-8 py-3 bg-red-500 hover:bg-red-600 text-white rounded-md
+                            transition-all flex items-center justify-between font-medium"
                           onClick={() => setSelectedServer(server)}
                         >
                           <span>Подробнее</span>
@@ -190,46 +187,46 @@ export default function ServersPage() {
           {selectedServer && (
             <motion.div
               animate={{ opacity: 1 }}
-              className="fixed inset-0 bg-[#080808]/90 backdrop-blur-xl z-50 flex items-center justify-center p-4"
+              className="fixed inset-0 bg-black/90 backdrop-blur-xl z-50 flex items-center justify-center p-4"
               exit={{ opacity: 0 }}
               initial={{ opacity: 0 }}
               onClick={() => setSelectedServer(null)}
             >
               <motion.div
                 animate={{ scale: 1 }}
-                className="relative max-w-2xl w-full bg-[#0a0a0a] border-2 border-[#4CAF50]/30 rounded-2xl overflow-hidden max-h-[90vh] flex flex-col"
+                className="relative max-w-2xl w-full bg-white/5 backdrop-blur-sm border-2 border-white/20 rounded-md overflow-hidden max-h-[90vh] flex flex-col"
                 initial={{ scale: 0.95 }}
                 onClick={(e) => e.stopPropagation()}
               >
                 <div className="p-8 space-y-6 overflow-y-auto">
                   <div className="flex items-center justify-between">
-                    <h2 className="text-2xl font-bold text-[#e0e0e0]">
+                    <h2 className="text-2xl font-bold text-white">
                       {selectedServer.title}
                     </h2>
-                    <FiServer className="text-3xl text-[#4CAF50]" />
+                    <FiServer className="text-3xl text-red-500" />
                   </div>
 
                   <div className="space-y-4">
-                    <div className="p-4 bg-[#1a1a1a] rounded-lg relative">
+                    <div className="p-4 bg-white/5 rounded-md relative">
                       <div className="flex items-center justify-between gap-2">
                         <div>
-                          <p className="text-sm text-[#8a8a8a] mb-1">
+                          <p className="text-sm text-white/50 mb-1">
                             IP-адрес
                           </p>
-                          <code className="text-xl text-[#6aee87] font-mono">
+                          <code className="text-red-500 font-mono">
                             {selectedServer.ipAddress}
                           </code>
                         </div>
                         <button
-                          className="p-2 hover:bg-[#4CAF50]/10 rounded-lg transition-colors"
+                          className="p-2 hover:bg-red-500/10 rounded-md transition-colors"
                           onClick={() =>
                             copyToClipboard(selectedServer.ipAddress)
                           }
                         >
                           {copiedIP === selectedServer.ipAddress ? (
-                            <FiCheck className="text-[#4CAF50]" />
+                            <FiCheck className="text-red-500" />
                           ) : (
-                            <FiCopy className="text-[#8a8a8a] hover:text-[#6aee87]" />
+                            <FiCopy className="text-white/50 hover:text-red-500" />
                           )}
                         </button>
                       </div>
@@ -241,7 +238,7 @@ export default function ServersPage() {
                         .map((paragraph, index) => (
                           <p
                             key={index}
-                            className="text-[#c0c0c0] mb-4 last:mb-0 animate-fade-in"
+                            className="text-white/70 mb-4 last:mb-0 animate-fade-in"
                           >
                             {paragraph}
                           </p>
@@ -250,10 +247,10 @@ export default function ServersPage() {
                   </div>
                 </div>
 
-                <div className="p-4 border-t border-[#1a1a1a] mt-auto">
+                <div className="p-4 border-t border-white/10 mt-auto">
                   <button
-                    className="w-full px-6 py-3 bg-[#4CAF50]/10 text-[#6aee87] rounded-lg
-                      hover:bg-[#4CAF50]/20 transition-all"
+                    className="w-full px-8 py-3 border border-white/30 hover:border-white text-white rounded-md
+                      transition-all"
                     onClick={() => setSelectedServer(null)}
                   >
                     Закрыть

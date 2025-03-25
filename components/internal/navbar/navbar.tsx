@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { motion } from "framer-motion";
-import {FiBook, FiBox, FiMessageSquare, FiMenu, FiX, FiCode} from "react-icons/fi";
+import { FiBook, FiBox, FiMessageSquare, FiMenu, FiX, FiCode } from "react-icons/fi";
 import { RiCoinLine } from "react-icons/ri";
 import { FaDiscord, FaTelegramPlane } from "react-icons/fa";
 import {
@@ -19,7 +19,7 @@ import { cn } from "@heroui/react";
 import { CgFileDocument } from "react-icons/cg";
 
 import { siteConfig } from "@/config/site";
-import {GiHelp} from "react-icons/gi";
+import { GiHelp } from "react-icons/gi";
 
 const menuItems = [
   {
@@ -40,13 +40,6 @@ const menuItems = [
     name: "Обратная связь",
     icon: FiMessageSquare,
     href: "/feedback",
-    color: "text-emerald-400",
-    delay: 0.3,
-  },
-  {
-    name: "Вакансии",
-    icon: FiCode,
-    href: "/jobs",
     color: "text-emerald-400",
     delay: 0.3,
   },
@@ -111,16 +104,10 @@ export const Navbar = () => {
         />
       </NavbarContent>
 
-      {/* Логотип для мобильной версии */}
+      {/* Логотип для мобильной версии с текстом */}
       <NavbarContent className="md:hidden z-50" justify="center">
         <Link className="font-minecraft flex items-center" href="/">
-          <img
-            alt="Логотип"
-            className="w-8 h-8"
-            height="36"
-            src="/input.svg"
-            width="32"
-          />
+          <span className="text-xl text-white">RISE OF THE BLACK SUN</span>
         </Link>
       </NavbarContent>
 
@@ -257,7 +244,7 @@ export const Navbar = () => {
               </Button>
             </div>
 
-            {/* Авторизация (мобильная) */}
+            {/* Авторизация (мобильные) */}
             {/*<div className="mt-6 flex justify-center">*/}
             {/*  <AuthButton />*/}
             {/*</div>*/}
