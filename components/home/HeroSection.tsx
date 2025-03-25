@@ -1,4 +1,6 @@
 "use client";
+import React from 'react';
+
 import { useRef, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
@@ -33,7 +35,7 @@ const LINKS = {
   },
   routes: {
     play: "/play",
-    worlds: "/worlds",
+    worlds: "/play",
     register: "/register",
     store: "/store"
   },

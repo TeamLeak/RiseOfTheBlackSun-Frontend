@@ -7,7 +7,7 @@ export const siteConfig = {
   name: "Black Sun Project",
   description:
     "Это целая платформа для развлечений, построенная на базе Minecraft.",
-  ipaddress: "gg.riseoftheblacksun.eu",
+  ipaddress: "play.riseoftheblacksun.eu",
   big_image: "https://riseoftheblacksun.eu/big_image.png",
   servers_fetch_url: "https://riseoftheblacksun.eu/api/getservers.php",
   navItems: [],
@@ -42,15 +42,14 @@ export const siteConfig = {
   ],
   links: {
     github: "https://github.com/saintedlittle",
-    twitter: "https://twitter.com/getnextui",
     docs: "https://nextui.org",
-    discord: "https://discord.gg/hdaezg8kxr",
+    discord: "https://discord.gg/deDgXYCCcA",
     sponsor: "https://vk.com/asykyy",
-    onlinemap: "http://riseoftheblacksun.eu/map",
+    onlinemap: "https://map.riseoftheblacksun.eu",
     forum: "https://t.me/+J87i02XAM9Q1YzI6",
-    telegram: "https://t.me/riseoftheblacksun_chat",
+    telegram: "https://t.me/riseoftheblacksun",
   },
   servers: {
-    vanilla: "gg.riseoftheblacksun.eu",
+    vanilla: "play.riseoftheblacksun.eu",
   },
 };

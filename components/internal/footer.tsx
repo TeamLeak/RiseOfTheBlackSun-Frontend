@@ -72,11 +72,11 @@ export const Footer = () => {
               <div className="flex gap-4 mt-4">
                 <SocialIcon
                   icon={<RiDiscordFill className="w-6 h-6" />}
-                  url="https://discord.gg/N9n6pNKgyx"
+                  url="https://discord.gg/deDgXYCCcA"
                 />
                 <SocialIcon
                   icon={<FiYoutube className="w-6 h-6" />}
-                  url="https://youtube.com"
+                  url="https://www.youtube.com/@riseoftheblacksun"
                 />
                 <SocialIcon
                   icon={<FiGithub className="w-6 h-6" />}
@@ -126,7 +126,7 @@ export const Footer = () => {
           className="mt-16 pt-6 border-t border-[#1a1a1a] flex flex-col md:flex-row justify-between gap-4 relative z-10"
         >
           <div className="text-[#5a5f65] text-xs font-minecraft space-y-1">
-            <p>ОГРНИП 1234567890123 · ИП Фёдоров Д.В.</p>
+            <p>ОГРНИП 325784700064244 · ИП Фёдоров Д.В.</p>
             <p className="text-[#6a6a6a]">
               RISE OF THE BLACK SUN не связан с Mojang AB. Коммерческая деятельность
               соответствует политике Mojang AB
