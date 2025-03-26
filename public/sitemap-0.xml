@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:news="http://www.google.com/schemas/sitemap-news/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:mobile="http://www.google.com/schemas/sitemap-mobile/1.0" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1" xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">
-<url><loc>https://riseoftheblacksun.eu/login</loc><lastmod>2025-03-25T20:45:17.011Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://riseoftheblacksun.eu/register</loc><lastmod>2025-03-25T20:45:17.012Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://riseoftheblacksun.eu/pay_error</loc><lastmod>2025-03-25T20:45:17.012Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://riseoftheblacksun.eu</loc><lastmod>2025-03-25T20:45:17.012Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://riseoftheblacksun.eu/pay_success</loc><lastmod>2025-03-25T20:45:17.012Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://riseoftheblacksun.eu/game</loc><lastmod>2025-03-25T20:45:17.012Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://riseoftheblacksun.eu/servers</loc><lastmod>2025-03-25T20:45:17.012Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://riseoftheblacksun.eu/store</loc><lastmod>2025-03-25T20:45:17.012Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://riseoftheblacksun.eu/play</loc><lastmod>2025-03-25T20:45:17.012Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://riseoftheblacksun.eu/profile</loc><lastmod>2025-03-25T20:45:17.012Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://riseoftheblacksun.eu/documents</loc><lastmod>2025-03-25T20:45:17.012Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://riseoftheblacksun.eu/feedback</loc><lastmod>2025-03-25T20:45:17.012Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://riseoftheblacksun.eu/punishments</loc><lastmod>2025-03-25T20:45:17.012Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://riseoftheblacksun.eu/store</loc><lastmod>2025-03-26T07:32:33.523Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://riseoftheblacksun.eu/login</loc><lastmod>2025-03-26T07:32:33.524Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://riseoftheblacksun.eu/servers</loc><lastmod>2025-03-26T07:32:33.524Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://riseoftheblacksun.eu/pay_success</loc><lastmod>2025-03-26T07:32:33.524Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://riseoftheblacksun.eu/documents</loc><lastmod>2025-03-26T07:32:33.524Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://riseoftheblacksun.eu</loc><lastmod>2025-03-26T07:32:33.524Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://riseoftheblacksun.eu/pay_error</loc><lastmod>2025-03-26T07:32:33.524Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://riseoftheblacksun.eu/register</loc><lastmod>2025-03-26T07:32:33.524Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://riseoftheblacksun.eu/play</loc><lastmod>2025-03-26T07:32:33.524Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://riseoftheblacksun.eu/game</loc><lastmod>2025-03-26T07:32:33.524Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://riseoftheblacksun.eu/profile</loc><lastmod>2025-03-26T07:32:33.524Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://riseoftheblacksun.eu/punishments</loc><lastmod>2025-03-26T07:32:33.524Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://riseoftheblacksun.eu/feedback</loc><lastmod>2025-03-26T07:32:33.524Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
 </urlset>

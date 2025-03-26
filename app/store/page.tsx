@@ -44,6 +44,9 @@ const useClientIP = () => {
   return clientIP;
 };
 
+// Функция для генерации случайного числа
+const generateRandomNumber = () => Math.floor(Math.random() * 1000000).toString().padStart(6, '0');
+
 // ================================
 // Типы данных магазина
 // ================================
@@ -142,7 +145,7 @@ const TopUpForm = ({ onSubmit, clientIP }: TopUpFormProps) => {
 
     const numericAmount = Math.round(parseFloat(amount) * 100);
     const payload = {
-      order_id: "topup-" + Date.now(),
+      order_id: `vanilla-${generateRandomNumber()}-${Date.now()}`,
       amount: numericAmount,
       description: "Пополнение баланса",
       client_ip: clientIP,
@@ -417,7 +420,7 @@ const PurchaseModal = ({
     e.preventDefault();
     const numericAmount = Math.round(purchaseItem.basePrice * 100);
     const payload = {
-      order_id: `purchase-${purchaseItem.id}-${Date.now()}`,
+      order_id: `${purchaseItem.serverName}-${generateRandomNumber()}-${Date.now()}`,
       amount: numericAmount,
       description: purchaseItem.name,
       client_ip: clientIP,
