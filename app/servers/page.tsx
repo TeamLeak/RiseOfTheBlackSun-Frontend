@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { FiCopy, FiServer, FiCheck } from "react-icons/fi";
 
 import { GlowingParticles } from "@/components/particles";
+import { siteConfig } from "@/config/site";
 
 type ServerItem = {
   badge?: string;
@@ -15,6 +16,8 @@ type ServerItem = {
 };
 
 const gradientText = "text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-orange-500";
+
+const SERVERS_URL = siteConfig.api.servers;
 
 export default function ServersPage() {
   const [servers, setServers] = useState<ServerItem[]>([]);
@@ -36,9 +39,7 @@ export default function ServersPage() {
   useEffect(() => {
     const fetchServers = async () => {
       try {
-        const response = await fetch(
-          "https://serversservice.riseoftheblacksun.eu/servers",
-        );
+        const response = await fetch(SERVERS_URL);
         const data = await response.json();
 
         setServers(data);

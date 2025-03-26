@@ -17,51 +17,72 @@ import { Link } from "@heroui/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@heroui/react";
 import { CgFileDocument } from "react-icons/cg";
-
-import { siteConfig } from "@/config/site";
 import { GiHelp } from "react-icons/gi";
 
-const menuItems = [
-  {
-    name: "Сервера",
-    icon: FiBox,
-    href: "/servers",
-    color: "text-blue-400",
-    delay: 0.15,
-  },
-  {
-    name: "Магазин",
-    icon: RiCoinLine,
-    href: "/store",
-    color: "text-amber-400",
-    delay: 0.1,
-  },
-  {
-    name: "Обратная связь",
-    icon: FiMessageSquare,
-    href: "/feedback",
-    color: "text-emerald-400",
-    delay: 0.3,
-  },
-  {
-    name: "Гайды",
-    icon: GiHelp,
-    href: "https://guide.riseoftheblacksun.eu/",
-    color: "text-emerald-400",
-    delay: 0.3,
-  },
-  {
-    name: "Документы",
-    icon: CgFileDocument,
-    href: "/documents",
-    color: "text-purple-400",
-    delay: 0.5,
-  },
-];
+import { siteConfig } from "@/config/site";
+
+// Маппинг иконок
+const iconMapping = {
+  FiBox,
+  FiMessageSquare,
+  RiCoinLine,
+  CgFileDocument,
+  GiHelp,
+};
+
+interface NavItem {
+  name: string;
+  icon: string;
+  href: string;
+  color: string;
+  delay: number;
+}
 
 export const Navbar = () => {
   const pathname = usePathname();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const renderNavItem = (item: NavItem) => {
+    const Icon = iconMapping[item.icon as keyof typeof iconMapping];
+    return (
+      <Button
+        as={Link}
+        className={cn(
+          "px-5 py-3 rounded-none border-2 border-[#1a1a1a] bg-[#0a0a0a]",
+          "font-minecraft hover:border-[#4CAF50] hover:bg-[#0f0f0f]",
+          pathname === item.href ? "border-[#4CAF50]" : "",
+        )}
+        href={item.href}
+        variant="flat"
+      >
+        <Icon className={cn(item.color, "mr-2")} size={20} />
+        <span className="text-[#8a8a8a] group-hover:text-[#6aee87]">
+          {item.name}
+        </span>
+      </Button>
+    );
+  };
+
+  const renderMobileNavItem = (item: NavItem) => {
+    const Icon = iconMapping[item.icon as keyof typeof iconMapping];
+    return (
+      <Button
+        fullWidth
+        as={Link}
+        className={cn(
+          "justify-start px-6 py-4 text-lg",
+          "border-2 border-[#1a1a1a] bg-[#0a0a0a]",
+          pathname === item.href && "border-[#4CAF50]",
+        )}
+        href={item.href}
+        variant="flat"
+        onClick={() => setIsMenuOpen(false)}
+      >
+        <Icon className={cn(item.color, "mr-3")} size={24} />
+        <span className="text-[#8a8a8a]">{item.name}</span>
+      </Button>
+    );
+  };
 
   return (
     <NextUINavbar
@@ -143,28 +164,14 @@ export const Navbar = () => {
 
       {/* Основные пункты меню (десктоп) */}
       <NavbarContent className="hidden md:flex gap-1" justify="center">
-        {menuItems.map((item) => (
+        {siteConfig.navItems.map((item) => (
           <NavbarItem key={item.name}>
             <motion.div
               animate={{ opacity: 1, y: 0 }}
               initial={{ opacity: 0, y: -10 }}
               transition={{ delay: item.delay }}
             >
-              <Button
-                as={Link}
-                className={cn(
-                  "px-5 py-3 rounded-none border-2 border-[#1a1a1a] bg-[#0a0a0a]",
-                  "font-minecraft hover:border-[#4CAF50] hover:bg-[#0f0f0f]",
-                  pathname === item.href ? "border-[#4CAF50]" : "",
-                )}
-                href={item.href}
-                variant="flat"
-              >
-                <item.icon className={cn(item.color, "mr-2")} size={20} />
-                <span className="text-[#8a8a8a] group-hover:text-[#6aee87]">
-                  {item.name}
-                </span>
-              </Button>
+              {renderNavItem(item)}
             </motion.div>
           </NavbarItem>
         ))}
@@ -210,23 +217,9 @@ export const Navbar = () => {
           initial={{ opacity: 0, x: -20 }}
         >
           <div className="flex flex-col gap-2">
-            {menuItems.map((item) => (
+            {siteConfig.navItems.map((item) => (
               <NavbarMenuItem key={item.name}>
-                <Button
-                  fullWidth
-                  as={Link}
-                  className={cn(
-                    "justify-start px-6 py-4 text-lg",
-                    "border-2 border-[#1a1a1a] bg-[#0a0a0a]",
-                    pathname === item.href && "border-[#4CAF50]",
-                  )}
-                  href={item.href}
-                  variant="flat"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  <item.icon className={cn(item.color, "mr-3")} size={24} />
-                  <span className="text-[#8a8a8a]">{item.name}</span>
-                </Button>
+                {renderMobileNavItem(item)}
               </NavbarMenuItem>
             ))}
 

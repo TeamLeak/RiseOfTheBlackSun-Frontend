@@ -25,6 +25,7 @@ import {
   FiBookOpen
 } from "react-icons/fi";
 import { useInView } from "react-intersection-observer";
+import { siteConfig } from "@/config/site";
 
 // JSON с ссылками и маршрутами
 const LINKS = {
@@ -39,7 +40,7 @@ const LINKS = {
     register: "/register",
     store: "/store"
   },
-  guides: "https://guide.riseoftheblacksun.eu/ru/home"
+  guides: siteConfig.api.guide + "/ru/home"
 };
 
 // Константы

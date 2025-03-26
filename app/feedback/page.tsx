@@ -18,87 +18,12 @@ import {
 import Particles, { initParticlesEngine } from "@tsparticles/react";
 import { ISourceOptions } from "@tsparticles/engine";
 import { loadSlim } from "@tsparticles/slim";
+import { siteConfig } from "@/config/site";
 
 type FeedbackType = "complaint" | "suggestion" | "appeal";
 
 // Конфигурация частиц с улучшенной анимацией
-const particlesOptions: ISourceOptions = {
-  fullScreen: {
-    enable: true,
-    zIndex: -1
-  },
-  background: {
-    color: "#000000",
-  },
-  particles: {
-    number: {
-      value: 60,
-      density: {
-        enable: true,
-      },
-    },
-    color: {
-      value: ["#EF4444", "#F97316", "#F59E0B"],
-    },
-    shape: {
-      type: ["circle", "triangle"],
-    },
-    opacity: {
-      value: { min: 0.1, max: 0.5 },
-      animation: {
-        enable: true,
-        speed: 1,
-        sync: false,
-      },
-    },
-    size: {
-      value: { min: 1, max: 3 },
-      animation: {
-        enable: true,
-        speed: 2,
-        sync: false,
-      },
-    },
-    move: {
-      enable: true,
-      speed: 1.5,
-      direction: "none",
-      random: true,
-      straight: false,
-      outModes: "out",
-    },
-    links: {
-      enable: true,
-      color: "#EF4444",
-      opacity: 0.15,
-      distance: 150,
-      width: 1,
-    },
-  },
-  interactivity: {
-    events: {
-      onHover: {
-        enable: true,
-        mode: "grab",
-      },
-      onClick: {
-        enable: true,
-        mode: "push",
-      },
-    },
-    modes: {
-      grab: {
-        distance: 140,
-        links: {
-          opacity: 0.5,
-        },
-      },
-      push: {
-        quantity: 4,
-      },
-    },
-  },
-};
+const particlesOptions = siteConfig.particles;
 
 const FeedbackPage = () => {
   const [activeTab, setActiveTab] = useState<FeedbackType>("complaint");

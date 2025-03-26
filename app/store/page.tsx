@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { FiX, FiClock, FiServer } from "react-icons/fi";
 import { GiCoins } from "react-icons/gi";
 import Image from "next/image";
+import { siteConfig } from "@/config/site";
 
 // URL для обращения к бекенду
 const PAYMENT_API_URL =
@@ -23,6 +24,10 @@ const SERVERS_API_URL =
 
 // Значение системы налогообложения для всех товаров (из env)
 const DEFAULT_TAXATION = process.env.NEXT_PUBLIC_DEFAULT_TAXATION || "osn";
+
+const PAY_URL = siteConfig.api.shop.pay;
+const TRANSACTIONS_URL = siteConfig.api.shop.transactions;
+const PRODUCTS_URL = siteConfig.api.shop.products;
 
 // Хук для получения IP клиента через ipify
 const useClientIP = () => {
