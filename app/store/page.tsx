@@ -2,7 +2,7 @@
 
 import { useState, useEffect, FormEvent } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { FiX, FiClock } from "react-icons/fi";
+import { FiX, FiClock, FiServer } from "react-icons/fi";
 import { GiCoins } from "react-icons/gi";
 import Image from "next/image";
 
@@ -15,6 +15,11 @@ const PAYMENT_API_URL =
 const TRANSACTIONS_API_URL =
     process.env.NEXT_PUBLIC_TRANSACTIONS_API_URL ||
     "https://shopservice.riseoftheblacksun.eu/transactions";
+
+// URL для получения списка серверов и товаров
+const SERVERS_API_URL =
+    process.env.NEXT_PUBLIC_SERVERS_API_URL ||
+    "https://shoplistservice.riseoftheblacksun.eu/products";
 
 // Значение системы налогообложения для всех товаров (из env)
 const DEFAULT_TAXATION = process.env.NEXT_PUBLIC_DEFAULT_TAXATION || "osn";
@@ -42,20 +47,34 @@ const useClientIP = () => {
 // ================================
 // Типы данных магазина
 // ================================
-export type Package = {
+export type Server = {
   id: number;
+  createdAt: string;
+  updatedAt: string;
+  name: string;
+  products: Product[];
+};
+
+export type Product = {
+  id: number;
+  createdAt: string;
+  updatedAt: string;
   name: string;
   category: string;
-  basePrice: number; // цена в рублях
+  basePrice: number;
   coins: number;
   bonus: number;
   image: string;
   features: string[];
+  commands: string[];
+  items: any[];
+  serverId: number;
+  serverName: string;
 };
 
 export type Transaction = {
   user: string;
-  amount: number; // в рублях
+  amount: number;
   time: string;
 };
 
@@ -289,53 +308,86 @@ const TopUpForm = ({ onSubmit, clientIP }: TopUpFormProps) => {
 // Компонент: ProductCard (Карточка товара)
 // ================================
 type ProductCardProps = {
-  pkg: Package;
-  onBuy: (pkg: Package) => void;
+  pkg: Product;
+  onBuy: (pkg: Product) => void;
 };
 
 const ProductCard = ({ pkg, onBuy }: ProductCardProps) => {
   return (
-      <motion.div
-          initial={{ y: 20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.3 }}
+    <motion.div
+      initial={{ y: 20, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ duration: 0.3 }}
+      whileHover={{ scale: 1.02, transition: { duration: 0.1 } }}
+      whileTap={{ scale: 0.98, transition: { duration: 0.1 } }}
+      className="relative bg-white/5 backdrop-blur-sm rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-all duration-200 flex flex-col border border-white/10"
+    >
+      <div className="relative h-48 w-full">
+        <Image
+          src={pkg.image}
+          alt={pkg.name}
+          fill
+          className="object-cover transition-transform duration-300 hover:scale-105"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent" />
+        <div className="absolute top-3 left-3">
+          <span className="px-2 py-1 bg-red-500/80 backdrop-blur-sm rounded-md text-xs text-white font-medium">
+            {pkg.serverName}
+          </span>
+        </div>
+      </div>
+      <div className="p-4 flex flex-col flex-grow">
+        <h3 className="text-lg font-bold mb-2 text-white">{pkg.name}</h3>
+        <div className="flex items-center gap-2 text-red-500 mb-3">
+          <GiCoins className="text-2xl" />
+          <span className="text-2xl font-semibold">{pkg.basePrice} ₽</span>
+        </div>
+        
+        {pkg.bonus > 0 && (
+          <div className="mb-3 p-2 bg-red-500/10 rounded-md border border-red-500/20">
+            <p className="text-sm text-red-500">
+              Бонус: +{pkg.bonus} монет
+            </p>
+          </div>
+        )}
+
+        <div className="space-y-3 flex-grow">
+          <div>
+            <h4 className="text-sm font-medium text-white/70 mb-1">Особенности:</h4>
+            <ul className="list-disc pl-4 space-y-1 text-sm text-white/70">
+              {pkg.features.map((feature, i) => (
+                <li key={i}>{feature}</li>
+              ))}
+            </ul>
+          </div>
+
+          {pkg.commands.length > 0 && (
+            <div>
+              <h4 className="text-sm font-medium text-white/70 mb-1">Команды:</h4>
+              <div className="flex flex-wrap gap-2">
+                {pkg.commands.map((command, i) => (
+                  <span
+                    key={i}
+                    className="px-2 py-1 bg-white/5 rounded-md text-xs text-white/70 border border-white/10"
+                  >
+                    /{command}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+
+        <motion.button
           whileHover={{ scale: 1.02, transition: { duration: 0.1 } }}
           whileTap={{ scale: 0.98, transition: { duration: 0.1 } }}
-          className="relative bg-white/5 backdrop-blur-sm rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-all duration-200 flex flex-col border border-white/10"
-      >
-        <div className="relative h-48 w-full">
-          <Image
-              src={pkg.image}
-              alt={pkg.name}
-              fill
-              className="object-cover transition-transform duration-300 hover:scale-105"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent" />
-        </div>
-        <div className="p-4 flex flex-col flex-grow">
-          <h3 className="text-lg font-bold mb-2 text-white">{pkg.name}</h3>
-          <div className="flex items-center gap-2 text-red-500 mb-3">
-            <GiCoins className="text-2xl" />
-            <span className="text-2xl font-semibold">{pkg.basePrice} ₽</span>
-          </div>
-          <ul className="list-disc pl-4 space-y-1 text-sm text-white/70 flex-grow">
-            {pkg.features.map((feature, i) => (
-                <li key={i}>{feature}</li>
-            ))}
-          </ul>
-          <motion.button
-              whileHover={{ scale: 1.02, transition: { duration: 0.1 } }}
-              whileTap={{ scale: 0.98, transition: { duration: 0.1 } }}
-              onClick={() => onBuy(pkg)}
-              className="mt-4 w-full py-2 bg-red-500 hover:bg-red-600 text-white rounded-md font-medium text-sm shadow-lg hover:shadow-xl transition-all duration-200"
-          >
-            Купить
-          </motion.button>
-        </div>
-        <div className="absolute top-3 right-3 bg-red-500 text-white px-2 py-0.5 rounded-full text-xs font-bold shadow-lg">
-          -20%
-        </div>
-      </motion.div>
+          onClick={() => onBuy(pkg)}
+          className="mt-4 w-full py-2 bg-red-500 hover:bg-red-600 text-white rounded-md font-medium text-sm shadow-lg hover:shadow-xl transition-all duration-200"
+        >
+          Купить
+        </motion.button>
+      </div>
+    </motion.div>
   );
 };
 
@@ -343,7 +395,7 @@ const ProductCard = ({ pkg, onBuy }: ProductCardProps) => {
 // Компонент: PurchaseModal (Модальное окно для покупки)
 // ================================
 type PurchaseModalProps = {
-  purchaseItem: Package | null;
+  purchaseItem: Product | null;
   onClose: () => void;
   onSubmit: (payload: any) => void;
   clientIP: string;
@@ -468,36 +520,100 @@ const PurchaseModal = ({
 };
 
 // ================================
+// Компонент: ServerSelector (Выбор сервера)
+// ================================
+type ServerSelectorProps = {
+  servers: Server[];
+  selectedServerId: number | null;
+  onSelect: (serverId: number) => void;
+};
+
+const ServerSelector = ({ servers, selectedServerId, onSelect }: ServerSelectorProps) => {
+  return (
+    <div className="bg-black/50 backdrop-blur-md border border-white/20 rounded-lg p-4 mb-6">
+      <h2 className="text-2xl font-bold mb-4 flex items-center gap-2 text-white">
+        <FiServer className="text-red-500" />
+        Выберите сервер
+      </h2>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {servers.map((server) => (
+          <motion.button
+            key={server.id}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => onSelect(server.id)}
+            className={`p-4 rounded-lg border transition-all duration-200 ${
+              selectedServerId === server.id
+                ? "bg-red-500/20 border-red-500"
+                : "bg-white/5 border-white/10 hover:bg-white/10"
+            }`}
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 rounded-full bg-red-500/20 flex items-center justify-center">
+                <FiServer className="text-2xl text-red-500" />
+              </div>
+              <div className="text-left">
+                <h3 className="font-bold text-white">{server.name}</h3>
+                <p className="text-sm text-white/50">
+                  {server.products.length} товаров
+                </p>
+              </div>
+            </div>
+          </motion.button>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+// ================================
 // Основной компонент: ShopPage
 // ================================
 export default function ShopPage() {
   const [loading, setLoading] = useState(true);
-  const [packages, setPackages] = useState<Package[]>([]);
+  const [servers, setServers] = useState<Server[]>([]);
+  const [selectedServerId, setSelectedServerId] = useState<number | null>(null);
+  const [products, setProducts] = useState<Product[]>([]);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [filter, setFilter] = useState("");
   const [activeCategory, setActiveCategory] = useState("Все");
-  const [purchaseItem, setPurchaseItem] = useState<Package | null>(null);
+  const [purchaseItem, setPurchaseItem] = useState<Product | null>(null);
 
   // Получаем IP клиента
   const clientIP = useClientIP();
 
-  // Получение списка товаров с бекенда
+  // Получение списка серверов и товаров с бекенда
   useEffect(() => {
-    const fetchPackages = async () => {
+    const fetchServers = async () => {
       try {
-        const res = await fetch("https://shoplistservice.riseoftheblacksun.eu/products");
+        const res = await fetch(SERVERS_API_URL);
         if (!res.ok) {
           throw new Error("Ошибка получения данных с сервера");
         }
         const data = await res.json();
-        setPackages(data);
+        
+        // Извлекаем все продукты из всех серверов
+        const allProducts = data.flatMap((server: Server) => 
+          server.products.map(product => ({
+            ...product,
+            serverName: server.name // Добавляем имя сервера к каждому продукту
+          }))
+        );
+        
+        setServers(data);
+        setProducts(allProducts);
+        
+        // Если есть серверы, выбираем первый по умолчанию
+        if (data.length > 0) {
+          setSelectedServerId(data[0].id);
+        }
       } catch (error) {
         console.error("Ошибка получения данных:", error);
       } finally {
         setLoading(false);
       }
     };
-    fetchPackages();
+    fetchServers();
   }, []);
 
   // Получение последних транзакций с сервера
@@ -517,11 +633,21 @@ export default function ShopPage() {
     fetchTransactions();
   }, []);
 
-  // Фильтрация товаров
-  const filteredPackages = packages.filter(
-      (pkg) =>
-          (activeCategory === "Все" || pkg.category === activeCategory) &&
-          pkg.name.toLowerCase().includes(filter.toLowerCase())
+  // Фильтрация товаров по выбранному серверу и другим критериям
+  const filteredProducts = products.filter(
+    (product) =>
+      (!selectedServerId || product.serverId === selectedServerId) &&
+      (activeCategory === "Все" || product.category === activeCategory) &&
+      product.name.toLowerCase().includes(filter.toLowerCase())
+  );
+
+  // Получение уникальных категорий для фильтра
+  const categories = Array.from(
+    new Set(
+      products
+        .filter(product => !selectedServerId || product.serverId === selectedServerId)
+        .map(product => product.category)
+    )
   );
 
   // Универсальная функция для создания платежа через бекенд
@@ -562,37 +688,43 @@ export default function ShopPage() {
 
           <TopUpForm onSubmit={createPayment} clientIP={clientIP} />
 
+          <ServerSelector
+            servers={servers}
+            selectedServerId={selectedServerId}
+            onSelect={setSelectedServerId}
+          />
+
           <div className="bg-black/50 backdrop-blur-md border border-white/20 rounded-lg p-4">
             <h2 className="text-2xl font-bold mb-4 text-center text-white">Фильтр товаров</h2>
             <div className="flex flex-wrap gap-2 mb-4">
-              {["Все", "Косметика", "Ключи", "Расходники"].map((cat) => (
-                  <button
-                      key={cat}
-                      onClick={() => setActiveCategory(cat)}
-                      className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
-                          activeCategory === cat
-                              ? "bg-red-500 hover:bg-red-600 text-white"
-                              : "bg-white/5 hover:bg-white/10 text-white border border-white/20"
-                      }`}
-                  >
-                    {cat}
-                  </button>
+              {["Все", ...categories].map((cat) => (
+                <button
+                  key={cat}
+                  onClick={() => setActiveCategory(cat)}
+                  className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
+                    activeCategory === cat
+                      ? "bg-red-500 hover:bg-red-600 text-white"
+                      : "bg-white/5 hover:bg-white/10 text-white border border-white/20"
+                  }`}
+                >
+                  {cat}
+                </button>
               ))}
             </div>
             <div>
               <input
-                  type="text"
-                  placeholder="Поиск по названию..."
-                  value={filter}
-                  onChange={(e) => setFilter(e.target.value)}
-                  className="w-full px-4 py-2 bg-white/5 backdrop-blur-sm rounded-md border border-white/10 focus:border-red-500 focus:ring-1 focus:ring-red-500/20 focus:outline-none text-white placeholder-white/50 text-sm"
+                type="text"
+                placeholder="Поиск по названию..."
+                value={filter}
+                onChange={(e) => setFilter(e.target.value)}
+                className="w-full px-4 py-2 bg-white/5 backdrop-blur-sm rounded-md border border-white/10 focus:border-red-500 focus:ring-1 focus:ring-red-500/20 focus:outline-none text-white placeholder-white/50 text-sm"
               />
             </div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {filteredPackages.map((pkg) => (
-                <ProductCard key={pkg.id} pkg={pkg} onBuy={setPurchaseItem} />
+            {filteredProducts.map((product) => (
+              <ProductCard key={product.id} pkg={product} onBuy={setPurchaseItem} />
             ))}
           </div>
 
