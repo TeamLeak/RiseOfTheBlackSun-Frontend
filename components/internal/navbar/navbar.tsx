@@ -107,7 +107,16 @@ export const Navbar = () => {
       {/* Логотип для мобильной версии с текстом */}
       <NavbarContent className="md:hidden z-50" justify="center">
         <Link className="font-minecraft flex items-center" href="/">
-          <span className="text-xl text-white">RISE OF THE BLACK SUN</span>
+          <div className="relative p-2">
+            <img
+              alt="Логотип"
+              className="w-6 h-6 text-[#6aee87]"
+              height="36"
+              src="/input.svg"
+              width="32"
+            />
+            <div className="absolute inset-0 border-2 border-[#4CAF50]/50 opacity-50" />
+          </div>
         </Link>
       </NavbarContent>
 
