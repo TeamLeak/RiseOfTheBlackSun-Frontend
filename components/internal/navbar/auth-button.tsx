@@ -175,15 +175,6 @@ export const AuthButton = () => {
           Мой профиль
         </DropdownItem>
         <DropdownItem
-          key="settings"
-          className="text-[#8a8a8a] hover:text-[#6aee87] hover:bg-[#0f0f0f] p-2"
-          startContent={<FiSettings className="text-[#6aee87]" />}
-          as={Link}
-          href="/settings"
-        >
-          Настройки
-        </DropdownItem>
-        <DropdownItem
           key="logout"
           className="text-[#8a8a8a] hover:text-[#6aee87] hover:bg-[#0f0f0f] p-2"
           startContent={<FiLogOut className="text-red-400" />}

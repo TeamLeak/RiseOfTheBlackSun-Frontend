@@ -12,7 +12,7 @@ const nextConfig = {
     experimental: {
         missingSuspenseWithCSRBailout: false,
     },
-    output: 'export',
+    //output: 'export',
 };
 
 module.exports = nextConfig;
