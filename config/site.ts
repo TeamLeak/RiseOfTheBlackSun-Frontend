@@ -241,7 +241,7 @@ export const siteConfig = {
     {
       name: "Гайды",
       icon: "GiHelp",
-      href: "/guide",
+      href: "https://guide.riseoftheblacksun.eu/",
       color: "text-emerald-400",
       delay: 0.3,
     },

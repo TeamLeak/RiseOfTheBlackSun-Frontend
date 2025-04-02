@@ -348,7 +348,7 @@ const ProductCard = ({ pkg, onBuy }: ProductCardProps) => {
         <h3 className="text-lg font-bold mb-2 text-white">{pkg.name}</h3>
         <div className="flex items-center gap-2 text-red-500 mb-3">
           <GiCoins className="text-2xl" />
-          <span className="text-2xl font-semibold">{pkg.basePrice} ₽</span>
+          <span className="text-2xl font-semibold">{pkg.basePrice} ₽ / шт</span>
         </div>
         
         {pkg.bonus > 0 && (
@@ -368,22 +368,6 @@ const ProductCard = ({ pkg, onBuy }: ProductCardProps) => {
               ))}
             </ul>
           </div>
-
-          {pkg.commands.length > 0 && (
-            <div>
-              <h4 className="text-sm font-medium text-white/70 mb-1">Команды:</h4>
-              <div className="flex flex-wrap gap-2">
-                {pkg.commands.map((command, i) => (
-                  <span
-                    key={i}
-                    className="px-2 py-1 bg-white/5 rounded-md text-xs text-white/70 border border-white/10"
-                  >
-                    /{command}
-                  </span>
-                ))}
-              </div>
-            </div>
-          )}
         </div>
 
         <motion.button
@@ -399,6 +383,8 @@ const ProductCard = ({ pkg, onBuy }: ProductCardProps) => {
   );
 };
 
+
+
 // ================================
 // Компонент: PurchaseModal (Модальное окно для покупки)
 // ================================
@@ -410,23 +396,29 @@ type PurchaseModalProps = {
 };
 
 const PurchaseModal = ({
-                         purchaseItem,
-                         onClose,
-                         onSubmit,
-                         clientIP,
-                       }: PurchaseModalProps) => {
+  purchaseItem,
+  onClose,
+  onSubmit,
+  clientIP,
+}: PurchaseModalProps) => {
   const [nickname, setNickname] = useState("");
   const [email, setEmail] = useState("");
   const [promo, setPromo] = useState("");
+  const [quantity, setQuantity] = useState("1");
 
   if (!purchaseItem) return null;
 
+  const qty = parseInt(quantity, 10) || 0;
+  const totalPrice = purchaseItem.basePrice * qty;
+
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const numericAmount = Math.round(purchaseItem.basePrice * 100);
+    const unitPrice = Math.round(purchaseItem.basePrice * 100);
+    const totalAmount = unitPrice * qty;
+
     const payload = {
       order_id: `${purchaseItem.serverName}-${generateRandomNumber()}-${Date.now()}`,
-      amount: numericAmount,
+      amount: totalAmount,
       description: purchaseItem.name,
       client_ip: clientIP,
       player_name: nickname,
@@ -438,9 +430,9 @@ const PurchaseModal = ({
         Items: [
           {
             Name: purchaseItem.name,
-            Price: numericAmount,
-            Quantity: "1",
-            Amount: numericAmount,
+            Price: unitPrice,
+            Quantity: quantity,
+            Amount: totalAmount,
             Tax: DEFAULT_TAXATION,
           },
         ],
@@ -451,81 +443,110 @@ const PurchaseModal = ({
   };
 
   return (
-      <AnimatePresence>
+    <AnimatePresence>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="fixed inset-0 bg-black/90 backdrop-blur-md z-50 flex items-center justify-center p-4"
+        onClick={onClose}
+      >
         <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/90 backdrop-blur-md z-50 flex items-center justify-center p-4"
-            onClick={onClose}
+          initial={{ scale: 0.8 }}
+          animate={{ scale: 1 }}
+          exit={{ scale: 0.8 }}
+          onClick={(e) => e.stopPropagation()}
+          className="relative bg-black/50 backdrop-blur-md rounded-lg border border-white/20 p-6 max-w-md w-full shadow-xl"
         >
-          <motion.div
-              initial={{ scale: 0.8 }}
-              animate={{ scale: 1 }}
-              exit={{ scale: 0.8 }}
-              onClick={(e) => e.stopPropagation()}
-              className="relative bg-black/50 backdrop-blur-md rounded-lg border border-white/20 p-6 max-w-md w-full shadow-xl"
+          <button
+            onClick={onClose}
+            className="absolute top-3 right-3 p-1.5 hover:bg-white/10 rounded-full transition-colors"
           >
-            <button
-                onClick={onClose}
-                className="absolute top-3 right-3 p-1.5 hover:bg-white/10 rounded-full transition-colors"
-            >
-              <FiX className="text-lg text-white" />
-            </button>
-            <div className="space-y-4">
-              <h2 className="text-2xl font-bold text-white">{purchaseItem.name}</h2>
-              <div className="flex items-center gap-2 text-red-500">
-                <GiCoins className="text-2xl" />
-                <span className="text-2xl font-bold">{purchaseItem.basePrice} ₽</span>
-              </div>
-              <form onSubmit={handleSubmit} className="space-y-3">
-                <div>
-                  <label className="block mb-1.5 text-xs uppercase tracking-wider text-red-500 font-medium">Имя пользователя</label>
-                  <input
-                      type="text"
-                      placeholder="Введите никнейм"
-                      required
-                      value={nickname}
-                      onChange={(e) => setNickname(e.target.value)}
-                      className="w-full px-4 py-2 bg-white/5 backdrop-blur-sm rounded-md border border-white/10 focus:border-red-500 focus:ring-1 focus:ring-red-500/20 focus:outline-none text-white placeholder-white/50 text-sm"
-                  />
-                </div>
-                <div>
-                  <label className="block mb-1.5 text-xs uppercase tracking-wider text-red-500 font-medium">Email</label>
-                  <input
-                      type="email"
-                      placeholder="example@mail.com"
-                      required
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      className="w-full px-4 py-2 bg-white/5 backdrop-blur-sm rounded-md border border-white/10 focus:border-red-500 focus:ring-1 focus:ring-red-500/20 focus:outline-none text-white placeholder-white/50 text-sm"
-                  />
-                </div>
-                <div>
-                  <label className="block mb-1.5 text-xs uppercase tracking-wider text-red-500 font-medium">Промокод (если есть)</label>
-                  <input
-                      type="text"
-                      placeholder="Введите промокод"
-                      value={promo}
-                      onChange={(e) => setPromo(e.target.value)}
-                      className="w-full px-4 py-2 bg-white/5 backdrop-blur-sm rounded-md border border-white/10 focus:border-red-500 focus:ring-1 focus:ring-red-500/20 focus:outline-none text-white placeholder-white/50 text-sm"
-                  />
-                </div>
-                <motion.button
-                    whileHover={{ scale: 1.02, transition: { duration: 0.1 } }}
-                    whileTap={{ scale: 0.98, transition: { duration: 0.1 } }}
-                    type="submit"
-                    className="w-full py-2.5 bg-red-500 hover:bg-red-600 text-white rounded-md font-medium text-sm shadow-lg hover:shadow-xl transition-all duration-200"
-                >
-                  Купить
-                </motion.button>
-              </form>
+            <FiX className="text-lg text-white" />
+          </button>
+          <div className="space-y-4">
+            <h2 className="text-2xl font-bold text-white">{purchaseItem.name}</h2>
+            <div className="flex items-center gap-2 text-red-500">
+              <GiCoins className="text-2xl" />
+              <span className="text-2xl font-bold">{purchaseItem.basePrice} ₽ / шт</span>
             </div>
-          </motion.div>
+            <form onSubmit={handleSubmit} className="space-y-3">
+              <div>
+                <label className="block mb-1.5 text-xs uppercase tracking-wider text-red-500 font-medium">
+                  Имя пользователя
+                </label>
+                <input
+                  type="text"
+                  placeholder="Введите никнейм"
+                  required
+                  value={nickname}
+                  onChange={(e) => setNickname(e.target.value)}
+                  className="w-full px-4 py-2 bg-white/5 backdrop-blur-sm rounded-md border border-white/10 focus:border-red-500 focus:ring-1 focus:ring-red-500/20 focus:outline-none text-white placeholder-white/50 text-sm"
+                />
+              </div>
+              <div>
+                <label className="block mb-1.5 text-xs uppercase tracking-wider text-red-500 font-medium">
+                  Email
+                </label>
+                <input
+                  type="email"
+                  placeholder="example@mail.com"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full px-4 py-2 bg-white/5 backdrop-blur-sm rounded-md border border-white/10 focus:border-red-500 focus:ring-1 focus:ring-red-500/20 focus:outline-none text-white placeholder-white/50 text-sm"
+                />
+              </div>
+              <div>
+                <label className="block mb-1.5 text-xs uppercase tracking-wider text-red-500 font-medium">
+                  Количество (в штуках)
+                </label>
+                <input
+                  type="number"
+                  placeholder="Введите количество"
+                  required
+                  value={quantity}
+                  onChange={(e) => setQuantity(e.target.value)}
+                  min="1"
+                  className="w-full px-4 py-2 bg-white/5 backdrop-blur-sm rounded-md border border-white/10 focus:border-red-500 focus:ring-1 focus:ring-red-500/20 focus:outline-none text-white placeholder-white/50 text-sm"
+                />
+              </div>
+              <div>
+                <label className="block mb-1.5 text-xs uppercase tracking-wider text-red-500 font-medium">
+                  Итого
+                </label>
+                <div className="w-full px-4 py-2 bg-white/5 backdrop-blur-sm rounded-md border border-white/10 text-white text-sm">
+                  {totalPrice.toFixed(2)} ₽
+                </div>
+              </div>
+              <div>
+                <label className="block mb-1.5 text-xs uppercase tracking-wider text-red-500 font-medium">
+                  Промокод (если есть)
+                </label>
+                <input
+                  type="text"
+                  placeholder="Введите промокод"
+                  value={promo}
+                  onChange={(e) => setPromo(e.target.value)}
+                  className="w-full px-4 py-2 bg-white/5 backdrop-blur-sm rounded-md border border-white/10 focus:border-red-500 focus:ring-1 focus:ring-red-500/20 focus:outline-none text-white placeholder-white/50 text-sm"
+                />
+              </div>
+              <motion.button
+                whileHover={{ scale: 1.02, transition: { duration: 0.1 } }}
+                whileTap={{ scale: 0.98, transition: { duration: 0.1 } }}
+                type="submit"
+                className="w-full py-2.5 bg-red-500 hover:bg-red-600 text-white rounded-md font-medium text-sm shadow-lg hover:shadow-xl transition-all duration-200"
+              >
+                Купить
+              </motion.button>
+            </form>
+          </div>
         </motion.div>
-      </AnimatePresence>
+      </motion.div>
+    </AnimatePresence>
   );
 };
+
 
 // ================================
 // Компонент: ServerSelector (Выбор сервера)

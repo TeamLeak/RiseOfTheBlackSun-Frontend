@@ -20,6 +20,7 @@ import { CgFileDocument } from "react-icons/cg";
 import { GiHelp } from "react-icons/gi";
 
 import { siteConfig } from "@/config/site";
+import { AuthButton } from "./auth-button";
 
 // Маппинг иконок
 const iconMapping = {
@@ -204,7 +205,7 @@ export const Navbar = () => {
             <FaDiscord className="w-5 h-5 text-[#6aee87]" />
           </Button>
 
-          {/*<AuthButton />*/}
+          <AuthButton />
         </motion.div>
       </NavbarContent>
 
@@ -247,9 +248,9 @@ export const Navbar = () => {
             </div>
 
             {/* Авторизация (мобильные) */}
-            {/*<div className="mt-6 flex justify-center">*/}
-            {/*  <AuthButton />*/}
-            {/*</div>*/}
+            <div className="mt-6 flex justify-center">
+              <AuthButton />
+            </div>
           </div>
         </motion.div>
       </NavbarMenu>

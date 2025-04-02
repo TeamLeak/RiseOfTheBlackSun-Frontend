@@ -1,3 +1,4 @@
+//@ts-nocheck @ts-ignore
 "use client";
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -17,6 +18,8 @@ import {
   FiBox,
 } from "react-icons/fi";
 import { Switch } from "@heroui/switch";
+import Cookies from 'js-cookie';
+import { useRouter } from 'next/navigation';
 
 const animateProps = {
   initial: { opacity: 0, y: 20 },
@@ -77,6 +80,7 @@ interface RadialProgressProps {
 
 const ProfileLayout = () => {
   const [activeTab, setActiveTab] = useState("profile");
+  const router = useRouter();
 
   const sidebarItems = [
     { id: "profile", icon: <FiUser />, color: "#EF4444" },
@@ -86,6 +90,40 @@ const ProfileLayout = () => {
     { id: "clan", icon: <FiUsers />, color: "#3B82F6" },
     { id: "security", icon: <FiLock />, color: "#7C3AED" },
   ];
+
+  // Функция для обновления информации профиля
+  const updateProfile = async (username: string, avatar: string) => {
+    try {
+      const token = Cookies.get("jwt");
+      if (!token) {
+        router.push("/login");
+        return;
+      }
+      
+      const response = await fetch("https://auth.riseoftheblacksun.eu/user/profile", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          username,
+          avatar
+        })
+      });
+      
+      if (response.ok) {
+        const updatedData = await response.json();
+        // Обновить состояние пользователя
+        return updatedData;
+      } else {
+        throw new Error("Не удалось обновить профиль");
+      }
+    } catch (error) {
+      console.error("Ошибка при обновлении профиля:", error);
+      throw error;
+    }
+  };
 
   return (
     <motion.div
