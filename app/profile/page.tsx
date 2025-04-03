@@ -688,6 +688,7 @@ const ProfileLayout = () => {
           {activeTab === "friends" && <FriendsList />}
           {activeTab === "clan" && <ClanDashboard />}
           {activeTab === "security" && <SecurityCenter />}
+          {activeTab === "skins" && <SkinsManager skins={skins} skinsLoading={skinsLoading} skinsError={skinsError} uploadLimits={uploadLimits} handleSkinChange={handleSkinChange} skinPreview={skinPreview} capePreview={capePreview} uploadCosmetic={uploadCosmetic} setActiveCosmetic={setActiveCosmetic} deleteCosmetic={deleteCosmetic} skinFile={skinFile} capeFile={capeFile} uploadType={uploadType} setUploadType={setUploadType} />}
         </AnimatePresence>
       </div>
     </motion.div>
@@ -1095,7 +1096,8 @@ const SecurityCenter = () => {
         
         if (responseHistory.ok) {
           const historyData = await responseHistory.json();
-          setLoginHistory(historyData);
+          // Ensure historyData is an array before setting it
+          setLoginHistory(Array.isArray(historyData) ? historyData : []);
         }
       } catch (error) {
         console.error("Error fetching security data:", error);
@@ -1229,13 +1231,13 @@ const SecurityCenter = () => {
               <div className="text-center p-4">
                 <p className="text-red-400">{error}</p>
               </div>
-            ) : loginHistory.length === 0 ? (
+            ) : !loginHistory || loginHistory.length === 0 ? (
               <div className="text-center p-4">
                 <p className="text-white">История входов пуста</p>
               </div>
             ) : (
               <div className="space-y-3">
-                {loginHistory.map((login, index) => (
+                {Array.isArray(loginHistory) && loginHistory.map((login, index) => (
                   <div
                     key={index}
                     className="flex items-center justify-between p-3 bg-black rounded-lg"
@@ -1311,6 +1313,319 @@ const SecurityCenter = () => {
               </Button>
             </div>
           </div>
+        </div>
+      </Card>
+    </motion.div>
+  );
+};
+
+// Компонент управления скинами и плащами
+const SkinsManager = ({ 
+  skins, 
+  skinsLoading, 
+  skinsError, 
+  uploadLimits, 
+  handleSkinChange, 
+  skinPreview, 
+  capePreview, 
+  uploadCosmetic, 
+  setActiveCosmetic, 
+  deleteCosmetic,
+  skinFile,
+  capeFile,
+  uploadType,
+  setUploadType
+}) => {
+  const [showForm, setShowForm] = useState(false);
+  const [skinName, setSkinName] = useState('');
+  const [uploadLoading, setUploadLoading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<'skin' | 'cape'>('skin');
+  
+  // Разделение скинов и плащей
+  const skinItems = skins.filter(item => item.type === 'skin');
+  const capeItems = skins.filter(item => item.type === 'cape');
+  
+  // Обработчик загрузки скина/плаща
+  const handleUpload = async () => {
+    if (!skinName.trim()) {
+      setUploadError('Введите название');
+      return;
+    }
+    
+    const fileToUpload = uploadType === 'skin' ? skinFile : capeFile;
+    if (!fileToUpload) {
+      setUploadError(`Выберите файл ${uploadType === 'skin' ? 'скина' : 'плаща'}`);
+      return;
+    }
+    
+    setUploadLoading(true);
+    setUploadError(null);
+    
+    try {
+      await uploadCosmetic(fileToUpload, uploadType, skinName);
+      setShowForm(false);
+      setSkinName('');
+    } catch (error) {
+      console.error('Ошибка загрузки:', error);
+      setUploadError('Ошибка загрузки. Проверьте формат файла.');
+    } finally {
+      setUploadLoading(false);
+    }
+  };
+  
+  return (
+    <motion.div {...animateProps} className="space-y-8">
+      <Card className="bg-black/50 backdrop-blur-md border border-white/10 rounded-2xl">
+        <div className="p-6 border-b border-white/10">
+          <h2 className="text-2xl font-bold text-pink-500">
+            <FiGlobe className="inline-block mr-3" />
+            Управление внешним видом
+          </h2>
+        </div>
+        <div className="p-6 space-y-6">
+          {/* Tabs и счетчики */}
+          <div className="flex justify-between items-center">
+            <div className="flex space-x-4">
+              <Button 
+                className={`${activeTab === 'skin' ? 'bg-pink-500/30 text-pink-400' : 'bg-white/5 text-white/70'}`}
+                onClick={() => setActiveTab('skin')}
+              >
+                Скины
+              </Button>
+              <Button 
+                className={`${activeTab === 'cape' ? 'bg-pink-500/30 text-pink-400' : 'bg-white/5 text-white/70'}`}
+                onClick={() => setActiveTab('cape')}
+              >
+                Плащи
+              </Button>
+            </div>
+            <div className="flex space-x-4">
+              <Chip color="primary" variant="dot">
+                Скины: {uploadLimits.skins.used}/{uploadLimits.skins.total}
+              </Chip>
+              <Chip color="secondary" variant="dot">
+                Плащи: {uploadLimits.capes.used}/{uploadLimits.capes.total}
+              </Chip>
+            </div>
+          </div>
+          
+          {/* Загрузка, ошибка или пустой список */}
+          {skinsLoading ? (
+            <div className="text-center p-8">
+              <p className="text-white">Загрузка...</p>
+            </div>
+          ) : skinsError ? (
+            <div className="text-center p-8">
+              <p className="text-red-400">{skinsError}</p>
+            </div>
+          ) : (
+            <>
+              {/* Кнопка добавления */}
+              <div className="flex justify-end">
+                <Button 
+                  className="bg-pink-500/20 border-pink-500/30 text-pink-400"
+                  onClick={() => setShowForm(!showForm)}
+                >
+                  {showForm ? 'Отменить' : 'Загрузить новый'}
+                </Button>
+              </div>
+              
+              {/* Форма загрузки */}
+              {showForm && (
+                <div className="bg-white/5 backdrop-blur-sm p-4 rounded-xl space-y-4">
+                  <h3 className="text-white font-medium">Загрузить новый {uploadType === 'skin' ? 'скин' : 'плащ'}</h3>
+                  
+                  {uploadError && (
+                    <div className="p-2 bg-red-500/20 border border-red-500/30 text-red-400 rounded-lg">
+                      {uploadError}
+                    </div>
+                  )}
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <Input 
+                        label="Название" 
+                        value={skinName}
+                        onChange={(e) => setSkinName(e.target.value)}
+                        placeholder="Мой крутой скин"
+                      />
+                      
+                      <div className="mt-4">
+                        <p className="text-white/70 mb-2">Тип:</p>
+                        <div className="flex space-x-4">
+                          <Button 
+                            size="sm"
+                            className={`${uploadType === 'skin' ? 'bg-pink-500/30 text-pink-400' : 'bg-white/5 text-white/70'}`}
+                            onClick={() => setUploadType('skin')}
+                          >
+                            Скин
+                          </Button>
+                          <Button 
+                            size="sm"
+                            className={`${uploadType === 'cape' ? 'bg-pink-500/30 text-pink-400' : 'bg-white/5 text-white/70'}`}
+                            onClick={() => setUploadType('cape')}
+                          >
+                            Плащ
+                          </Button>
+                        </div>
+                      </div>
+                      
+                      <div className="mt-4">
+                        <label className="block text-white/70 mb-2">
+                          {uploadType === 'skin' ? 'Файл скина:' : 'Файл плаща:'}
+                        </label>
+                        <input 
+                          type="file" 
+                          accept=".png" 
+                          onChange={(e) => handleSkinChange(e, uploadType)}
+                          className="block w-full text-white/70 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-pink-500/20 file:text-pink-400 hover:file:bg-pink-500/30"
+                        />
+                        <p className="text-white/50 text-xs mt-1">Только PNG файлы, макс. 1MB</p>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center justify-center">
+                      {uploadType === 'skin' ? (
+                        skinPreview ? (
+                          <img src={skinPreview} alt="Предпросмотр скина" className="max-w-full max-h-48 object-contain" />
+                        ) : (
+                          <div className="bg-white/10 rounded-md p-4 text-white/50 text-center">
+                            Предпросмотр скина
+                          </div>
+                        )
+                      ) : (
+                        capePreview ? (
+                          <img src={capePreview} alt="Предпросмотр плаща" className="max-w-full max-h-48 object-contain" />
+                        ) : (
+                          <div className="bg-white/10 rounded-md p-4 text-white/50 text-center">
+                            Предпросмотр плаща
+                          </div>
+                        )
+                      )}
+                    </div>
+                  </div>
+                  
+                  <div className="flex justify-end">
+                    <Button 
+                      className="bg-pink-500/20 border-pink-500/30 text-pink-400"
+                      onClick={handleUpload}
+                      disabled={uploadLoading}
+                    >
+                      {uploadLoading ? 'Загрузка...' : 'Загрузить'}
+                    </Button>
+                  </div>
+                </div>
+              )}
+              
+              {/* Галерея скинов/плащей */}
+              <div className="mt-6">
+                <h3 className="text-white font-medium mb-4">
+                  {activeTab === 'skin' ? 'Мои скины' : 'Мои плащи'}
+                </h3>
+                
+                {/* Скины */}
+                {activeTab === 'skin' && (
+                  skinItems.length === 0 ? (
+                    <div className="bg-white/5 backdrop-blur-sm p-8 rounded-xl text-center">
+                      <p className="text-white/70">У вас нет загруженных скинов</p>
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      {skinItems.map((skin) => (
+                        <div key={skin.id} className="bg-white/5 backdrop-blur-sm p-4 rounded-xl hover:bg-white/10 transition-colors">
+                          <div className="aspect-square mb-3 overflow-hidden rounded-lg flex items-center justify-center bg-white/10">
+                            <img src={skin.url} alt={skin.name} className="max-w-full max-h-full object-contain" />
+                          </div>
+                          <div className="flex justify-between items-center">
+                            <h4 className="text-white font-medium truncate">{skin.name}</h4>
+                            <Chip color={skin.active ? 'success' : 'default'} size="sm">
+                              {skin.active ? 'Активен' : 'Неактивен'}
+                            </Chip>
+                          </div>
+                          <p className="text-white/50 text-xs mt-1">{new Date(skin.uploadDate).toLocaleDateString('ru-RU')}</p>
+                          
+                          <div className="flex justify-between mt-3">
+                            {!skin.active && (
+                              <Button 
+                                size="sm" 
+                                className="bg-green-500/20 text-green-400"
+                                onClick={() => setActiveCosmetic(skin.id, 'skin')}
+                              >
+                                Активировать
+                              </Button>
+                            )}
+                            {skin.active && (
+                              <Button size="sm" className="opacity-0 cursor-default">
+                                &nbsp;
+                              </Button>
+                            )}
+                            <Button 
+                              size="sm" 
+                              className="bg-red-500/20 text-red-400"
+                              onClick={() => deleteCosmetic(skin.id)}
+                            >
+                              Удалить
+                            </Button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )
+                )}
+                
+                {/* Плащи */}
+                {activeTab === 'cape' && (
+                  capeItems.length === 0 ? (
+                    <div className="bg-white/5 backdrop-blur-sm p-8 rounded-xl text-center">
+                      <p className="text-white/70">У вас нет загруженных плащей</p>
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      {capeItems.map((cape) => (
+                        <div key={cape.id} className="bg-white/5 backdrop-blur-sm p-4 rounded-xl hover:bg-white/10 transition-colors">
+                          <div className="aspect-square mb-3 overflow-hidden rounded-lg flex items-center justify-center bg-white/10">
+                            <img src={cape.url} alt={cape.name} className="max-w-full max-h-full object-contain" />
+                          </div>
+                          <div className="flex justify-between items-center">
+                            <h4 className="text-white font-medium truncate">{cape.name}</h4>
+                            <Chip color={cape.active ? 'success' : 'default'} size="sm">
+                              {cape.active ? 'Активен' : 'Неактивен'}
+                            </Chip>
+                          </div>
+                          <p className="text-white/50 text-xs mt-1">{new Date(cape.uploadDate).toLocaleDateString('ru-RU')}</p>
+                          
+                          <div className="flex justify-between mt-3">
+                            {!cape.active && (
+                              <Button 
+                                size="sm" 
+                                className="bg-green-500/20 text-green-400"
+                                onClick={() => setActiveCosmetic(cape.id, 'cape')}
+                              >
+                                Активировать
+                              </Button>
+                            )}
+                            {cape.active && (
+                              <Button size="sm" className="opacity-0 cursor-default">
+                                &nbsp;
+                              </Button>
+                            )}
+                            <Button 
+                              size="sm" 
+                              className="bg-red-500/20 text-red-400"
+                              onClick={() => deleteCosmetic(cape.id)}
+                            >
+                              Удалить
+                            </Button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )
+                )}
+              </div>
+            </>
+          )}
         </div>
       </Card>
     </motion.div>
