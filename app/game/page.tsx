@@ -1,3 +1,4 @@
+//@ts-nocheck @ts-ignore
 "use client";
 import { motion, AnimatePresence } from "framer-motion";
 import React, { useState, useEffect } from "react";
@@ -15,6 +16,7 @@ import { TbHexagon3D } from "react-icons/tb";
 
 import { title } from "@/components/primitives";
 import { GlowingGrid } from "@/components/grid";
+import { siteConfig } from "@/config/site";
 
 // ===== Типы данных с сервера =====
 
@@ -73,10 +75,10 @@ interface EcosystemData {
 }
 
 interface LauncherData {
+  title: string;
   version: string;
   downloadUrl: string;
-  guideUrl: string;
-  releaseNotes: string;
+  features: string[];
 }
 
 interface ServerData {
@@ -91,117 +93,27 @@ const fetchServerData = async (): Promise<ServerData> => {
   return new Promise((resolve) => {
     setTimeout(() => {
       resolve({
-        essentials: {
-          requirements: {
-            title: "Обязательные условия",
-            items: [
-              {
-                icon: "🌐",
-                title: "Интернет-соединение",
-                text: "Минимум 5 Мбит/с, стабильный пинг",
-              },
-              {
-                icon: "🔐",
-                title: "Лицензия Minecraft",
-                text: "Java Edition 1.12.2 - 1.20.x",
-              },
-              {
-                icon: "💿",
-                title: "Системные требования",
-                text: "Intel i5 / 8GB RAM / SSD",
-              },
-            ],
-          },
-          recommendations: {
-            title: "Рекомендации",
-            items: [
-              {
-                icon: "🎛️",
-                title: "Оптимизация",
-                text: "Используйте OptiFine или Sodium",
-              },
-              {
-                icon: "🎧",
-                title: "Голосовой чат",
-                text: "Подключите гарнитуру",
-              },
-              {
-                icon: "🛡️",
-                title: "Безопасность",
-                text: "Двухфакторная аутентификация",
-              },
-            ],
-          },
-          footer:
-              "IP-адрес сервера обновляется автоматически в нашем Discord-сообществе. Для доступа к экспериментальным сборкам требуется специальная роль.",
-        },
-        optimization: {
-          title: "Оптимизация",
-          cards: [
-            {
-              icon: "command",
-              title: "Драйвера",
-              content: "Обновите драйвера GPU.",
-            },
-            {
-              icon: "download",
-              title: "Моды",
-              content: "Sodium, Lithium, LazyDFU, Krypton",
-            },
-            {
-              icon: "server",
-              title: "Лаунчеры",
-              content: "ATLauncher или PrismLauncher",
-            },
-          ],
-          performance: [
-            { title: "Рендеринг", value: "16 чанков", progress: 70 },
-            { title: "Память", value: "8 ГБ выделено", progress: 85 },
-          ],
-        },
-        ecosystem: {
-          title: "Экосистема",
-          integrations: [
-            {
-              platform: "Discord",
-              status: "Online",
-              features: ["Синхронизация ролей", "Голосовые каналы"],
-            },
-            {
-              platform: "Telegram",
-              status: "Beta",
-              features: ["Уведомления", "Статистика"],
-            },
-            {
-              platform: "Web",
-              status: "Live",
-              features: ["Мониторинг", "Управление"],
-            },
-          ],
-          roadmap: [
-            { title: "Собственный лаунчер", progress: 45, eta: "Q3 2024" },
-            { title: "Мобильное приложение", progress: 20, eta: "Q4 2024" },
-            { title: "API система", progress: 80, eta: "Q2 2024" },
-          ],
-        },
+        essentials: siteConfig.server.essentials,
+        optimization: siteConfig.server.optimization,
+        ecosystem: siteConfig.server.ecosystem,
         launcher: {
+          title: "Лаунчер",
           version: "1.0.0",
-          downloadUrl: "https://launcher.riseoftheblacksun.eu/download",
-          guideUrl: "https://guide.riseoftheblacksun.eu",
-          releaseNotes: "Это тестовая версия лаунчера с базовыми функциями.",
+          downloadUrl: siteConfig.api.launcher,
+          features: ["Автообновление", "Оптимизация", "Моды"],
         },
       });
-    }, 2000);
+    }, 1000);
   });
 };
 
 // ===== Маппинг иконок для карточек оптимизации =====
-const optimizationIconMapping: { [key: string]: React.ReactNode } = {
-  command: <FiCommand className="text-3xl" />,
-  download: <FiDownloadCloud className="text-3xl" />,
-  server: <FiServer className="text-3xl" />,
+// @ts-ignore
+const optimizationIconMapping: { [key: string]: JSX.Element } = {
+  command: <FiCommand className="text-3xl" /> as JSX.Element,
+  download: <FiDownloadCloud className="text-3xl" /> as JSX.Element,
+  server: <FiServer className="text-3xl" /> as JSX.Element,
 };
-
 // ===== Компоненты =====
 
 const EssentialsSection = ({ data }: { data: EssentialsData }) => (
@@ -316,29 +228,30 @@ const EcosystemSection = ({ data }: { data: EcosystemData }) => (
 // Блок с лаунчером вынесен отдельно (например, выше разделов)
 const LauncherSection = ({ data }: { data: LauncherData }) => {
   return (
-      <div className="p-6 bg-[#1a1a1a] rounded-xl mb-8">
-        <h4 className="text-[#4CAF50] font-semibold mb-4">Подробнее о проекте</h4>
-        <p className="text-[#e0e0e0] mb-2">Версия: {data.version}</p>
-        <p className="text-[#8a8a8a] mb-4">{data.releaseNotes}</p>
-        <div className="flex items-center gap-4">
-          {/*<a*/}
-          {/*    href={data.downloadUrl}*/}
-          {/*    target="_blank"*/}
-          {/*    rel="noopener noreferrer"*/}
-          {/*    className="px-4 py-2 bg-[#4CAF50] text-[#0a0a0a] rounded-lg hover:bg-[#43A047] transition disabled:cursor-default"*/}
-          {/*>*/}
-          {/*  Скачать лаунчер*/}
-          {/*</a>*/}
-          <a
-              href={data.guideUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="px-4 py-2 bg-[#1a1a1a] border-2 border-[#4CAF50] text-[#4CAF50] rounded-lg hover:bg-[#4CAF50] hover:text-[#0a0a0a] transition"
+    <div className="p-6 bg-[#1a1a1a] rounded-xl mb-8">
+      <h4 className="text-[#4CAF50] font-semibold mb-4">{data.title}</h4>
+      <p className="text-[#e0e0e0] mb-2">Версия: {data.version}</p>
+      <div className="flex flex-wrap gap-2 mb-4">
+        {data.features.map((feature) => (
+          <span
+            key={feature}
+            className="px-3 py-1 bg-[#4CAF50]/10 text-[#4CAF50] rounded-full text-sm"
           >
-            Полный гайд по механикам
-          </a>
-        </div>
+            {feature}
+          </span>
+        ))}
       </div>
+      <div className="flex items-center gap-4">
+        <a
+          href={data.downloadUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="px-4 py-2 bg-[#4CAF50] text-[#0a0a0a] rounded-lg hover:bg-[#43A047] transition"
+        >
+          Скачать лаунчер
+        </a>
+      </div>
+    </div>
   );
 };
 

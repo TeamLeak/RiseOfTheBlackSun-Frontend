@@ -3,8 +3,10 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { EyeIcon, EyeSlashIcon, XCircleIcon } from '@heroicons/react/24/outline';
+import { useRouter } from 'next/navigation';
+import Cookies from 'js-cookie';
 
-const API_URL = 'https://api.example.com/login';
+const API_URL = 'https://auth.riseoftheblacksun.eu/login';
 
 const backgroundStyle = {
   backgroundImage: `
@@ -21,6 +23,7 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,14 +38,28 @@ export default function Login() {
       });
       
       if (response.ok) {
-        // Успешный вход
-        console.log('Вход выполнен успешно!');
-        // Здесь можно добавить редирект или другую логику
+        // Получаем данные из ответа, включая JWT токен
+        const data = await response.json();
+        
+        // Сохраняем JWT в куки
+        if (data.token) {
+          Cookies.set('jwt', data.token, { 
+            expires: 7, // Срок действия куки - 7 дней
+            secure: process.env.NODE_ENV === 'production', // Использовать HTTPS в продакшн
+            sameSite: 'strict' 
+          });
+          
+          // Перенаправляем пользователя на главную страницу
+          router.push('/');
+        } else {
+          throw new Error('Токен не получен от сервера');
+        }
       } else {
-        throw new Error('Ошибка входа');
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Ошибка входа');
       }
-    } catch (error) {
-      setError('Неверный email или пароль');
+    } catch (error: any) {
+      setError(error.message || 'Неверный email или пароль');
     } finally {
       setLoading(false);
     }

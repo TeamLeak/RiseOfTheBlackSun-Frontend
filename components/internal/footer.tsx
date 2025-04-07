@@ -139,7 +139,7 @@ export const Footer = () => {
               transition={{ repeat: Infinity, duration: 1.5 }}
               className="w-3 h-3 bg-[#4CAF50] animate-pulse"
             />
-            <span>2024 — Все права защищены.</span>
+            <span>2025 — Все права защищены.</span>
           </div>
         </motion.div>
       </div>

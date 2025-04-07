@@ -1,5 +1,4 @@
-// @ts-ignore
-
+//@ts-nocheck @ts-ignore
 "use client";
 
 import React, { useState, useEffect } from "react";
@@ -8,6 +7,7 @@ import { FiLoader, FiSearch } from "react-icons/fi";
 import { ISourceOptions } from "@tsparticles/engine";
 import { loadSlim } from "@tsparticles/slim";
 import Particles, { initParticlesEngine } from "@tsparticles/react";
+import { siteConfig } from "@/config/site";
 
 // Тип данных для наказания (поля в PascalCase)
 type Punishment = {
@@ -113,7 +113,7 @@ const PunishmentsPage = () => {
   const fetchPunishments = async () => {
     setLoading(true);
     try {
-      const response = await fetch("https://punishmentsservice.riseoftheblacksun.eu/punishments");
+      const response = await fetch(siteConfig.api.punishments);
       if (!response.ok) {
         console.error("Ошибка при получении данных с сервера");
         return;
